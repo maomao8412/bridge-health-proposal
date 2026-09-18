@@ -1,0 +1,1624 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>基于大模型的桥梁结构健康分析技术建议书</title>
+<style>
+/* ========== 视觉系统 Token ========== */
+:root {
+  --color-canvas: #f4f6f8;
+  --color-canvas-deep: #e8edf2;
+  --color-surface: #ffffff;
+  --color-surface-alt: #fafbfc;
+  --color-ink: #14213d;
+  --color-ink-soft: #3d4f6f;
+  --color-ink-mute: #6b7c94;
+  --color-line: #d5dde8;
+  --color-line-soft: #e6ecf3;
+  --color-accent: #0077b6;
+  --color-accent-strong: #005f92;
+  --color-accent-soft: #e0eff7;
+  --color-accent-ink: #ffffff;
+  --color-teal: #00b4a0;
+  --color-teal-soft: #d6f2ee;
+  --color-amber: #e08a00;
+  --color-amber-soft: #fbe8c0;
+  --color-danger: #c23b22;
+  --color-danger-soft: #f7dcd4;
+
+  --font-body: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  --shadow-sm: 0 1px 2px rgba(20, 33, 61, 0.06);
+  --shadow-md: 0 4px 12px rgba(20, 33, 61, 0.08);
+  --shadow-lg: 0 12px 32px rgba(20, 33, 61, 0.12);
+
+  --content-max: 1180px;
+  --reading-width: 72ch;
+  --space-section: clamp(48px, 7vw, 88px);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--color-ink);
+  background: var(--color-canvas);
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color .2s;
+}
+a:hover { border-bottom-color: var(--color-accent); }
+a:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* ========== 顶部导航 ========== */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(244, 246, 248, 0.88);
+  backdrop-filter: saturate(160%) blur(12px);
+  -webkit-backdrop-filter: saturate(160%) blur(12px);
+  border-bottom: 1px solid var(--color-line-soft);
+}
+.nav-inner {
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: 12px clamp(20px, 4vw, 40px);
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.nav-brand {
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: .02em;
+  color: var(--color-ink);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+.nav-brand-mark {
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-teal) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+}
+.nav-links {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.nav-links::-webkit-scrollbar { display: none; }
+.nav-links a {
+  font-size: 13px;
+  color: var(--color-ink-soft);
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+  border: none;
+  transition: background .15s, color .15s;
+}
+.nav-links a:hover {
+  background: var(--color-surface);
+  color: var(--color-ink);
+}
+
+/* ========== Hero 开场 ========== */
+.hero {
+  position: relative;
+  padding: clamp(48px, 8vw, 96px) 0 clamp(40px, 5vw, 64px);
+  background: linear-gradient(160deg, #0a2540 0%, #003d66 45%, #005f92 100%);
+  color: #fff;
+  overflow: hidden;
+}
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 80% 20%, rgba(0, 180, 160, 0.25) 0%, transparent 50%),
+    radial-gradient(ellipse at 10% 80%, rgba(0, 119, 182, 0.3) 0%, transparent 50%);
+  pointer-events: none;
+}
+.hero-inner {
+  position: relative;
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: 0 clamp(20px, 4vw, 40px);
+}
+.hero-tag {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  margin-bottom: 20px;
+}
+.hero h1 {
+  font-size: clamp(28px, 4.5vw, 48px);
+  line-height: 1.2;
+  font-weight: 700;
+  max-width: 18ch;
+  margin-bottom: 20px;
+  letter-spacing: -0.01em;
+}
+.hero-sub {
+  font-size: clamp(15px, 1.8vw, 18px);
+  line-height: 1.7;
+  color: rgba(255,255,255,0.85);
+  max-width: 52ch;
+  margin-bottom: 36px;
+}
+.hero-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 16px;
+  max-width: 640px;
+}
+.hero-metric {
+  padding: 16px 18px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: var(--radius-md);
+  backdrop-filter: blur(6px);
+}
+.hero-metric-value {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: 4px;
+  font-variant-numeric: tabular-nums;
+}
+.hero-metric-label {
+  font-size: 12px;
+  color: rgba(255,255,255,0.72);
+  line-height: 1.4;
+}
+
+/* ========== 通用布局 ========== */
+.section {
+  padding: var(--space-section) 0;
+}
+.section + .section {
+  border-top: 1px solid var(--color-line-soft);
+}
+.section-inner {
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: 0 clamp(20px, 4vw, 40px);
+}
+.section-head {
+  margin-bottom: clamp(28px, 4vw, 48px);
+  max-width: 72ch;
+}
+.section-eyebrow {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-bottom: 10px;
+}
+.section-head h2 {
+  font-size: clamp(22px, 3vw, 32px);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  margin-bottom: 12px;
+  color: var(--color-ink);
+}
+.section-head p {
+  font-size: 16px;
+  color: var(--color-ink-soft);
+  line-height: 1.7;
+}
+
+h3 {
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.35;
+  margin-bottom: 12px;
+  color: var(--color-ink);
+}
+h4 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--color-ink);
+}
+
+p + p { margin-top: 12px; }
+
+/* ========== 背景切换 ========== */
+.section--alt {
+  background: var(--color-surface);
+}
+.section--dark {
+  background: #0a2540;
+  color: rgba(255,255,255,0.9);
+}
+.section--dark .section-eyebrow { color: var(--color-teal); }
+.section--dark h2, .section--dark h3, .section--dark h4 { color: #fff; }
+.section--dark p { color: rgba(255,255,255,0.78); }
+.section--dark + .section--dark { border-top-color: rgba(255,255,255,0.1); }
+
+/* ========== 背景与现状 ========== */
+.status-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+@media (max-width: 760px) {
+  .status-grid { grid-template-columns: 1fr; }
+}
+.status-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  box-shadow: var(--shadow-sm);
+}
+.status-card--accent {
+  border-left: 4px solid var(--color-accent);
+}
+.status-card ul {
+  list-style: none;
+  padding: 0;
+}
+.status-card li {
+  position: relative;
+  padding: 8px 0 8px 22px;
+  font-size: 15px;
+  color: var(--color-ink-soft);
+  line-height: 1.6;
+  border-bottom: 1px solid var(--color-line-soft);
+}
+.status-card li:last-child { border-bottom: none; }
+.status-card li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 16px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-accent);
+}
+.status-card--pain li::before {
+  background: var(--color-danger);
+}
+
+/* ========== 路线对比 ========== */
+.routes-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--color-line);
+  box-shadow: var(--shadow-md);
+}
+@media (max-width: 860px) {
+  .routes-compare { grid-template-columns: 1fr; }
+}
+.route-card {
+  padding: 32px 28px;
+  background: var(--color-surface);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.route-card:first-child {
+  border-right: 1px solid var(--color-line);
+}
+@media (max-width: 860px) {
+  .route-card:first-child {
+    border-right: none;
+    border-bottom: 1px solid var(--color-line);
+  }
+}
+.route-card--primary {
+  background: linear-gradient(180deg, #f0f7fc 0%, #ffffff 100%);
+  position: relative;
+}
+.route-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 4px;
+  background: var(--color-accent-soft);
+  color: var(--color-accent-strong);
+  width: fit-content;
+}
+.route-badge--primary {
+  background: var(--color-accent);
+  color: #fff;
+}
+.route-badge--teal {
+  background: var(--color-teal-soft);
+  color: #008a7a;
+}
+.route-title {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--color-ink);
+}
+.route-desc {
+  font-size: 14px;
+  color: var(--color-ink-soft);
+  line-height: 1.7;
+}
+.route-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.route-metric {
+  padding: 10px 12px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line-soft);
+  border-radius: var(--radius-sm);
+}
+.route-metric-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+}
+.route-metric-label {
+  font-size: 11px;
+  color: var(--color-ink-mute);
+}
+.route-features h4 {
+  font-size: 13px;
+  color: var(--color-ink-mute);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  margin-bottom: 10px;
+}
+.route-features ul {
+  list-style: none;
+  padding: 0;
+}
+.route-features li {
+  font-size: 14px;
+  color: var(--color-ink-soft);
+  padding: 6px 0 6px 20px;
+  position: relative;
+  line-height: 1.5;
+}
+.route-features li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: var(--color-teal);
+  font-weight: 700;
+}
+
+/* 对比表格 */
+.compare-table-wrap {
+  overflow-x: auto;
+  margin-top: 32px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-line);
+  box-shadow: var(--shadow-sm);
+}
+.compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  min-width: 600px;
+}
+.compare-table th,
+.compare-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--color-line-soft);
+}
+.compare-table thead th {
+  background: var(--color-surface-alt);
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--color-ink);
+  position: sticky;
+  top: 0;
+}
+.compare-table tbody tr:last-child td { border-bottom: none; }
+.compare-table tbody tr:hover { background: var(--color-surface-alt); }
+.compare-table td:first-child {
+  font-weight: 500;
+  color: var(--color-ink);
+  white-space: nowrap;
+}
+.compare-table td:not(:first-child) {
+  color: var(--color-ink-soft);
+}
+
+/* ========== 技术架构 SVG ========== */
+.architecture-wrap {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-lg);
+  padding: 32px 28px;
+  box-shadow: var(--shadow-sm);
+  overflow-x: auto;
+}
+.architecture-wrap svg {
+  width: 100%;
+  height: auto;
+  min-width: 600px;
+  display: block;
+}
+
+/* ========== 方案详情 ========== */
+.solution-steps {
+  display: grid;
+  gap: 20px;
+}
+.step-block {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 20px;
+  padding: 24px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  transition: border-color .2s, box-shadow .2s;
+}
+.step-block:hover {
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-sm);
+}
+.step-num {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.step-content h4 {
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+.step-content p {
+  font-size: 14px;
+  color: var(--color-ink-soft);
+  line-height: 1.65;
+}
+.step-meta {
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--color-ink-mute);
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.step-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* 双方案并排 */
+.solutions-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  align-items: start;
+}
+@media (max-width: 860px) {
+  .solutions-grid { grid-template-columns: 1fr; }
+}
+.solution-col h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--color-line);
+  margin-bottom: 20px;
+}
+.solution-col--a h3 { border-bottom-color: var(--color-accent); }
+.solution-col--b h3 { border-bottom-color: var(--color-teal); }
+.solution-label {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: .04em;
+}
+.solution-col--a .solution-label {
+  background: var(--color-accent-soft);
+  color: var(--color-accent-strong);
+}
+.solution-col--b .solution-label {
+  background: var(--color-teal-soft);
+  color: #008a7a;
+}
+
+/* ========== 实施路线 ========== */
+.roadmap {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+@media (max-width: 900px) {
+  .roadmap { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 520px) {
+  .roadmap { grid-template-columns: 1fr; }
+}
+.phase-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  padding: 22px 20px;
+  border-top: 3px solid var(--color-accent);
+  position: relative;
+}
+.phase-card:nth-child(2) { border-top-color: var(--color-teal); }
+.phase-card:nth-child(3) { border-top-color: var(--color-amber); }
+.phase-card:nth-child(4) { border-top-color: #6c5ce7; }
+
+.phase-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--color-ink-mute);
+  margin-bottom: 6px;
+}
+.phase-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--color-ink);
+  margin-bottom: 12px;
+  line-height: 1.3;
+}
+.phase-duration {
+  font-size: 12px;
+  color: var(--color-accent);
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+.phase-card ul {
+  list-style: none;
+  padding: 0;
+}
+.phase-card li {
+  font-size: 13px;
+  color: var(--color-ink-soft);
+  padding: 5px 0 5px 16px;
+  position: relative;
+  line-height: 1.5;
+}
+.phase-card li::before {
+  content: "·";
+  position: absolute;
+  left: 4px;
+  top: 2px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-ink-mute);
+}
+
+/* ========== 风险与建议 ========== */
+.risk-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 18px;
+}
+.risk-item {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-left: 4px solid var(--color-amber);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+}
+.risk-item h4 {
+  font-size: 15px;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.risk-level {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 3px;
+  letter-spacing: .04em;
+  background: var(--color-amber-soft);
+  color: #8a5500;
+}
+.risk-level--high {
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+}
+.risk-level--low {
+  background: var(--color-teal-soft);
+  color: #008a7a;
+}
+.risk-item p {
+  font-size: 13px;
+  color: var(--color-ink-soft);
+  line-height: 1.6;
+}
+
+/* ========== 底部总结 ========== */
+.summary-band {
+  background: linear-gradient(135deg, #003d66 0%, #005f92 50%, #0077b6 100%);
+  color: #fff;
+  padding: clamp(40px, 6vw, 72px) 0;
+  text-align: center;
+}
+.summary-band h2 {
+  color: #fff;
+  font-size: clamp(22px, 3vw, 32px);
+  margin-bottom: 16px;
+}
+.summary-band p {
+  max-width: 60ch;
+  margin: 0 auto 28px;
+  font-size: 16px;
+  color: rgba(255,255,255,0.85);
+  line-height: 1.7;
+}
+.summary-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  background: #fff;
+  color: var(--color-accent-strong);
+  font-weight: 600;
+  font-size: 15px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  transition: transform .15s, box-shadow .2s;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+.summary-cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+}
+
+/* ========== 页脚 ========== */
+.footer {
+  padding: 28px 0;
+  background: #0a2540;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+}
+.footer-inner {
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: 0 clamp(20px, 4vw, 40px);
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* ========== 打印样式 ========== */
+@media print {
+  .nav { position: static; backdrop-filter: none; background: #fff; }
+  .hero { background: #0a2540 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .summary-band { background: #003d66 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .section { padding: 24px 0; page-break-inside: avoid; }
+  .step-block, .phase-card, .route-card, .risk-item {
+    box-shadow: none !important;
+    border: 1px solid #ccc;
+  }
+  .architecture-wrap { page-break-inside: avoid; }
+  .summary-cta { display: none; }
+  body { font-size: 12pt; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- 导航 -->
+<nav class="nav" aria-label="目录导航">
+  <div class="nav-inner">
+    <div class="nav-brand">
+      <span class="nav-brand-mark">桥</span>
+      BridgeAI × LLM
+    </div>
+    <div class="nav-links">
+      <a href="#background">背景现状</a>
+      <a href="#routes">技术路线</a>
+      <a href="#architecture">整体架构</a>
+      <a href="#solution-a">诊断分析</a>
+      <a href="#solution-b">特征工程</a>
+      <a href="#roadmap">实施路径</a>
+      <a href="#risks">风险提示</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-inner">
+    <span class="hero-tag">技术建议书 · 桥梁结构健康监测</span>
+    <h1>基于大模型的桥梁健康分析系统升级方案</h1>
+    <p class="hero-sub">
+      在现有 GBDT 预测模型（R²=0.92）的基础上，引入大模型技术提升桥梁健康评估的可解释性、特征丰富度和智能化水平。
+      本建议书提出两条互补的技术路线，可分阶段实施，渐进式释放大模型价值。
+    </p>
+    <div class="hero-metrics">
+      <div class="hero-metric">
+        <div class="hero-metric-value">0.92</div>
+        <div class="hero-metric-label">当前 GBDT 模型 R²</div>
+      </div>
+      <div class="hero-metric">
+        <div class="hero-metric-value">3 类</div>
+        <div class="hero-metric-label">可用原始数据源</div>
+      </div>
+      <div class="hero-metric">
+        <div class="hero-metric-value">2 条</div>
+        <div class="hero-metric-label">大模型升级路线</div>
+      </div>
+      <div class="hero-metric">
+        <div class="hero-metric-value">0.95+</div>
+        <div class="hero-metric-label">融合后预期 R²</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 背景与现状 -->
+<section class="section section--alt" id="background">
+  <div class="section-inner">
+    <div class="section-head">
+      <span class="section-eyebrow">01 · 背景现状</span>
+      <h2>现有模型表现优秀，但存在两处明显短板</h2>
+      <p>
+        当前桥梁健康预测模型基于 GBDT 算法，在 3000 条样本上达到 R²=0.92 的预测精度，性能指标优秀。
+        但从工程应用和长期迭代的角度，仍存在两个核心痛点亟待解决。
+      </p>
+    </div>
+
+    <div class="status-grid">
+      <div class="status-card status-card--accent">
+        <h3>✅ 当前能力基线</h3>
+        <ul>
+          <li><strong>预测精度高</strong>：GBDT 模型 R²=0.92，MAE&lt;1，数值预测能力扎实</li>
+          <li><strong>推理速度快</strong>：ONNX 模型仅 5MB，单样本推理毫秒级，适合大规模部署</li>
+          <li><strong>特征重要性明确</strong>：超限次数（41%）和位移均值（33%）主导预测</li>
+          <li><strong>训练成本低</strong>：100 棵树、2.36 秒完成训练，调参迭代快</li>
+          <li><strong>部署门槛低</strong>：标准 ONNX 格式，支持端侧和边缘部署</li>
+        </ul>
+      </div>
+
+      <div class="status-card status-card--pain">
+        <h3>⚠️ 核心痛点</h3>
+        <ul>
+          <li><strong>"黑盒"不可解释</strong>：只输出一个健康指数，养护人员无法理解"为什么"以及"怎么办"</li>
+          <li><strong>特征维度有限</strong>：仅 6 个手工统计特征，大量原始数据中的信息被压缩丢失</li>
+          <li><strong>无法利用非结构化数据</strong>：巡检记录、病害照片等富信息数据完全未参与建模</li>
+          <li><strong>诊断能力缺失</strong>：无法给出针对性的原因分析和维护建议，决策仍依赖人工经验</li>
+          <li><strong>泛化能力受限</strong>：纯统计特征对新桥型、新工况的迁移能力有限</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 数据资产盘点 -->
+    <div style="margin-top:32px;">
+      <h3 style="margin-bottom:16px;">💎 数据资产盘点：三类数据齐备，升级条件成熟</h3>
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:16px;">
+        <div style="background: var(--color-surface); border:1px solid var(--color-line); border-radius: var(--radius-md); padding:20px; border-top: 3px solid var(--color-accent);">
+          <div style="font-size:13px; font-weight:700; color:var(--color-ink); margin-bottom:6px;">📊 传感器原始时序数据</div>
+          <div style="font-size:12px; color:var(--color-ink-soft); line-height:1.6;">位移、温度、荷载、应变等监测指标的时间序列原始数据，可提取趋势、突变、响应关系等深层模式特征。</div>
+        </div>
+        <div style="background: var(--color-surface); border:1px solid var(--color-line); border-radius: var(--radius-md); padding:20px; border-top: 3px solid var(--color-teal);">
+          <div style="font-size:13px; font-weight:700; color:var(--color-ink); margin-bottom:6px;">📝 巡检记录文本</div>
+          <div style="font-size:12px; color:var(--color-ink-soft); line-height:1.6;">历史巡检报告、病害描述、养护日志等非结构化文本，蕴含丰富的表观病害信息和人工经验判断。</div>
+        </div>
+        <div style="background: var(--color-surface); border:1px solid var(--color-line); border-radius: var(--radius-md); padding:20px; border-top: 3px solid var(--color-amber);">
+          <div style="font-size:13px; font-weight:700; color:var(--color-ink); margin-bottom:6px;">🖼 桥梁巡检照片</div>
+          <div style="font-size:12px; color:var(--color-ink-soft); line-height:1.6;">桥梁各部位巡检照片、无人机航拍图像等视觉数据，可提取表观病害特征，与传感器数据形成互补。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 技术路线对比 -->
+<section class="section" id="routes">
+  <div class="section-inner">
+    <div class="section-head">
+      <span class="section-eyebrow">02 · 技术路线</span>
+      <h2>两条路线并行，价值互补而非互斥</h2>
+      <p>
+        大模型在桥梁健康分析中可以扮演两个不同但互补的角色：
+        <strong>诊断分析专家</strong>（提升可解释性和决策价值）和
+        <strong>特征工程助手</strong>（从非结构化数据中提取新特征提升预测精度）。
+        两者可独立部署，也可组合形成完整的智能化分析体系。
+      </p>
+    </div>
+
+    <div class="routes-compare">
+      <div class="route-card route-card--primary">
+        <span class="route-badge route-badge--primary">推荐优先实施</span>
+        <div class="route-title">路线 A：大模型诊断分析</div>
+        <p class="route-desc">
+          保留 GBDT 作为数值预测引擎，大模型负责将预测结果和特征数据转化为自然语言诊断报告，
+          解决"黑盒不可解释"问题，直接提升养护决策效率。
+        </p>
+        <div class="route-metrics">
+          <div class="route-metric">
+            <div class="route-metric-value">1-2周</div>
+            <div class="route-metric-label">MVP 周期</div>
+          </div>
+          <div class="route-metric">
+            <div class="route-metric-value">不变</div>
+            <div class="route-metric-label">预测精度</div>
+          </div>
+          <div class="route-metric">
+            <div class="route-metric-value">低</div>
+            <div class="route-metric-label">数据依赖</div>
+          </div>
+          <div class="route-metric">
+            <div class="route-metric-value">高</div>
+            <div class="route-metric-label">业务价值</div>
+          </div>
+        </div>
+        <div class="route-features">
+          <h4>核心能力</h4>
+          <ul>
+            <li>自动生成结构化诊断报告</li>
+            <li>多维度风险因素识别与排序</li>
+            <li>原因推理与机理分析</li>
+            <li>分级维护建议（短/中/长期）</li>
+            <li>异常预警与智能告警</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="route-card">
+        <span class="route-badge route-badge--teal">依赖额外数据源</span>
+        <div class="route-title">路线 B：大模型特征工程</div>
+        <p class="route-desc">
+          利用大模型从巡检文本、桥梁图像、时序数据等原始数据中提取结构化新特征，
+          与现有 6 维特征融合后重新训练模型，从源头提升预测精度和泛化能力。
+        </p>
+        <div class="route-metrics">
+          <div class="route-metric">
+            <div class="route-metric-value">3 类</div>
+            <div class="route-metric-label">数据已齐备</div>
+          </div>
+          <div class="route-metric">
+            <div class="route-metric-value">0.95+</div>
+            <div class="route-metric-label">预期 R²</div>
+          </div>
+          <div class="route-metric">
+            <div class="route-metric-value">高</div>
+            <div class="route-metric-label">数据依赖</div>
+          </div>
+          <div class="route-metric">
+            <div class="route-metric-value">中</div>
+            <div class="route-metric-label">业务价值</div>
+          </div>
+        </div>
+        <div class="route-features">
+          <h4>核心能力</h4>
+          <ul>
+            <li>巡检文本结构化抽取（病害/位置/程度）</li>
+            <li>多模态视觉特征提取（裂缝/锈蚀/变形）</li>
+            <li>时序模式语义化描述</li>
+            <li>跨模态特征融合与降维</li>
+            <li>新模型训练与精度验证</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 详细对比表 -->
+    <div class="compare-table-wrap">
+      <table class="compare-table">
+        <caption style="display:none">两条技术路线详细对比</caption>
+        <thead>
+          <tr>
+            <th scope="col">对比维度</th>
+            <th scope="col">路线 A：诊断分析</th>
+            <th scope="col">路线 B：特征工程</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>核心目标</td>
+            <td>提升可解释性，赋能决策</td>
+            <td>提升预测精度和泛化能力</td>
+          </tr>
+          <tr>
+            <td>大模型角色</td>
+            <td>下游：解释器 + 顾问</td>
+            <td>上游：特征提取器</td>
+          </tr>
+          <tr>
+            <td>对现有模型的影响</td>
+            <td>无改动，GBDT 保持不变</td>
+            <td>需重新训练融合模型</td>
+          </tr>
+          <tr>
+            <td>额外数据需求</td>
+            <td>领域知识（阈值、规范）</td>
+            <td>✅ 巡检文本 / ✅ 桥梁图像 / ✅ 时序数据</td>
+          </tr>
+          <tr>
+            <td>研发周期</td>
+            <td>1-2 周出 MVP</td>
+            <td>6-10 周完整落地</td>
+          </tr>
+          <tr>
+            <td>调用成本</td>
+            <td>中等（每次预测需调用）</td>
+            <td>低（离线处理，训练时用）</td>
+          </tr>
+          <tr>
+            <td>效果验证方式</td>
+            <td>人工评估 + 用户反馈</td>
+            <td>R² / MAE / RMSE 量化对比</td>
+          </tr>
+          <tr>
+            <td>落地优先级</td>
+            <td>⭐⭐⭐⭐⭐ 一期必做</td>
+            <td>⭐⭐⭐ 二期可选</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- 整体架构图 -->
+<section class="section section--alt" id="architecture">
+  <div class="section-inner">
+    <div class="section-head">
+      <span class="section-eyebrow">03 · 技术架构</span>
+      <h2>双引擎架构：GBDT 保精度，大模型提智能</h2>
+      <p>
+        整体采用"预测引擎 + 智能引擎"的双引擎架构。GBDT 负责稳定高效的数值预测，
+        大模型负责特征增强和诊断解释，两者通过标准化接口协作，可分阶段上线、渐进式升级。
+      </p>
+    </div>
+
+    <div class="architecture-wrap">
+      <svg viewBox="0 0 960 560" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="arch-title arch-desc">
+        <title id="arch-title">桥梁健康分析大模型技术架构图</title>
+        <desc id="arch-desc">展示从数据输入到预测引擎、智能引擎再到输出的整体架构</desc>
+
+        <defs>
+          <linearGradient id="gradInput" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#e8edf2"/>
+            <stop offset="100%" stop-color="#d5dde8"/>
+          </linearGradient>
+          <linearGradient id="gradGBDT" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#0077b6"/>
+            <stop offset="100%" stop-color="#005f92"/>
+          </linearGradient>
+          <linearGradient id="gradLLM" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#00b4a0"/>
+            <stop offset="100%" stop-color="#008a7a"/>
+          </linearGradient>
+          <linearGradient id="gradOutput" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#0a2540"/>
+            <stop offset="100%" stop-color="#14213d"/>
+          </linearGradient>
+          <marker id="arrow1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="#6b7c94"/>
+          </marker>
+          <marker id="arrowA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="#0077b6"/>
+          </marker>
+          <marker id="arrowB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="#00b4a0"/>
+          </marker>
+        </defs>
+
+        <!-- 数据层 -->
+        <g>
+          <rect x="20" y="30" width="160" height="70" rx="8" fill="url(#gradInput)" stroke="#b8c4d4"/>
+          <text x="100" y="58" text-anchor="middle" font-size="13" font-weight="700" fill="#14213d">传感器特征数据</text>
+          <text x="100" y="78" text-anchor="middle" font-size="11" fill="#3d4f6f">6维手工特征</text>
+        </g>
+        <g>
+          <rect x="20" y="130" width="160" height="70" rx="8" fill="url(#gradInput)" stroke="#b8c4d4"/>
+          <text x="100" y="158" text-anchor="middle" font-size="13" font-weight="700" fill="#14213d">巡检文本记录</text>
+          <text x="100" y="178" text-anchor="middle" font-size="11" fill="#3d4f6f">病害描述 / 养护日志</text>
+        </g>
+        <g>
+          <rect x="20" y="230" width="160" height="70" rx="8" fill="url(#gradInput)" stroke="#b8c4d4"/>
+          <text x="100" y="258" text-anchor="middle" font-size="13" font-weight="700" fill="#14213d">桥梁图像视频</text>
+          <text x="100" y="278" text-anchor="middle" font-size="11" fill="#3d4f6f">巡检照片 / 无人机航拍</text>
+        </g>
+        <g>
+          <rect x="20" y="330" width="160" height="70" rx="8" fill="url(#gradInput)" stroke="#b8c4d4"/>
+          <text x="100" y="358" text-anchor="middle" font-size="13" font-weight="700" fill="#14213d">领域知识库</text>
+          <text x="100" y="378" text-anchor="middle" font-size="11" fill="#3d4f6f">设计参数 / 规范 / 案例</text>
+        </g>
+
+        <!-- 大模型特征工程模块 -->
+        <g>
+          <rect x="260" y="120" width="180" height="260" rx="10" fill="url(#gradLLM)" stroke="#008a7a"/>
+          <text x="350" y="150" text-anchor="middle" font-size="14" font-weight="700" fill="#fff">路线B：大模型特征工程</text>
+          <line x1="280" y1="162" x2="420" y2="162" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+          <text x="350" y="185" text-anchor="middle" font-size="12" fill="rgba(255,255,255,0.9)">▸ 文本结构化抽取</text>
+          <text x="350" y="208" text-anchor="middle" font-size="12" fill="rgba(255,255,255,0.9)">▸ 多模态视觉特征</text>
+          <text x="350" y="231" text-anchor="middle" font-size="12" fill="rgba(255,255,255,0.9)">▸ 时序模式识别</text>
+          <text x="350" y="254" text-anchor="middle" font-size="12" fill="rgba(255,255,255,0.9)">▸ 特征融合与降维</text>
+          <text x="350" y="340" text-anchor="middle" font-size="12" font-weight="600" fill="#d6f2ee">输出：N维增强特征</text>
+        </g>
+
+        <!-- 箭头：非结构化数据 -> 特征工程 -->
+        <path d="M180,165 C220,165 220,190 260,190" fill="none" stroke="#6b7c94" stroke-width="1.5" marker-end="url(#arrow1)"/>
+        <path d="M180,265 C220,265 220,230 260,230" fill="none" stroke="#6b7c94" stroke-width="1.5" marker-end="url(#arrow1)"/>
+
+        <!-- GBDT 预测引擎 -->
+        <g>
+          <rect x="510" y="180" width="180" height="140" rx="10" fill="url(#gradGBDT)" stroke="#005f92"/>
+          <text x="600" y="210" text-anchor="middle" font-size="14" font-weight="700" fill="#fff">预测引擎</text>
+          <text x="600" y="232" text-anchor="middle" font-size="13" fill="rgba(255,255,255,0.85)">GBDT / 融合模型</text>
+          <line x1="530" y1="245" x2="670" y2="245" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+          <text x="600" y="268" text-anchor="middle" font-size="12" fill="rgba(255,255,255,0.9)">R² = 0.92 → 0.95+</text>
+          <text x="600" y="290" text-anchor="middle" font-size="12" fill="rgba(255,255,255,0.9)">MAE &lt; 1.0</text>
+          <text x="600" y="308" text-anchor="middle" font-size="11" font-weight="600" fill="#e0eff7">输出：健康指数</text>
+        </g>
+
+        <!-- 箭头：传感器 -> GBDT -->
+        <path d="M180,65 C340,65 340,250 510,250" fill="none" stroke="#0077b6" stroke-width="2" marker-end="url(#arrowA)"/>
+        <text x="340" y="55" text-anchor="middle" font-size="11" fill="#0077b6" font-weight="600">主输入路径</text>
+
+        <!-- 箭头：特征工程 -> GBDT -->
+        <path d="M440,250 L510,250" fill="none" stroke="#00b4a0" stroke-width="2" marker-end="url(#arrowB)"/>
+        <text x="475" y="238" text-anchor="middle" font-size="10" fill="#008a7a" font-weight="600">增强特征</text>
+
+        <!-- 大模型诊断分析模块 -->
+        <g>
+          <rect x="510" y="380" width="180" height="140" rx="10" fill="url(#gradLLM)" stroke="#008a7a"/>
+          <text x="600" y="410" text-anchor="middle" font-size="14" font-weight="700" fill="#fff">路线A：大模型诊断分析</text>
+          <line x1="530" y1="422" x2="670" y2="422" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+          <text x="600" y="445" text-anchor="middle" font-size="12" fill="rgba(255,255,255,0.9)">▸ 健康等级评估</text>
+          <text x="600" y="465" text-anchor="middle" font-size="12" fill="rgba(255,255,255,0.9)">▸ 风险因素分析</text>
+          <text x="600" y="485" text-anchor="middle" font-size="12" fill="rgba(255,255,255,0.9)">▸ 维护建议生成</text>
+          <text x="600" y="505" text-anchor="middle" font-size="11" font-weight="600" fill="#d6f2ee">输出：诊断报告</text>
+        </g>
+
+        <!-- 箭头：知识库 -> 诊断分析 -->
+        <path d="M180,365 C340,365 340,450 510,450" fill="none" stroke="#6b7c94" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow1)"/>
+        <text x="340" y="355" text-anchor="middle" font-size="10" fill="#6b7c94">RAG 知识检索</text>
+
+        <!-- 箭头：GBDT -> 诊断分析 -->
+        <path d="M600,320 L600,380" fill="none" stroke="#0077b6" stroke-width="2" marker-end="url(#arrowA)"/>
+        <text x="615" y="355" font-size="10" fill="#0077b6" font-weight="600">预测结果</text>
+
+        <!-- 箭头：特征 -> 诊断分析 -->
+        <path d="M180,65 C180,450 510,450 510,450" fill="none" stroke="#3d4f6f" stroke-width="1" stroke-dasharray="3,3" opacity="0"/>
+
+        <!-- 输出层 -->
+        <g>
+          <rect x="770" y="180" width="170" height="340" rx="10" fill="url(#gradOutput)" stroke="#14213d"/>
+          <text x="855" y="210" text-anchor="middle" font-size="14" font-weight="700" fill="#fff">交付产物</text>
+          <line x1="790" y1="225" x2="920" y2="225" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+          <text x="855" y="255" text-anchor="middle" font-size="12" fill="#00b4a0" font-weight="600">健康指数</text>
+          <text x="855" y="273" text-anchor="middle" font-size="11" fill="rgba(255,255,255,0.7)">0-100 量化评分</text>
+          <text x="855" y="303" text-anchor="middle" font-size="12" fill="#00b4a0" font-weight="600">诊断报告</text>
+          <text x="855" y="321" text-anchor="middle" font-size="11" fill="rgba(255,255,255,0.7)">多维度分析</text>
+          <text x="855" y="351" text-anchor="middle" font-size="12" fill="#00b4a0" font-weight="600">维护建议</text>
+          <text x="855" y="369" text-anchor="middle" font-size="11" fill="rgba(255,255,255,0.7)">短/中/长期</text>
+          <text x="855" y="399" text-anchor="middle" font-size="12" fill="#e08a00" font-weight="600">异常预警</text>
+          <text x="855" y="417" text-anchor="middle" font-size="11" fill="rgba(255,255,255,0.7)">阈值告警推送</text>
+          <text x="855" y="447" text-anchor="middle" font-size="12" fill="#6c5ce7" font-weight="600">趋势分析</text>
+          <text x="855" y="465" text-anchor="middle" font-size="11" fill="rgba(255,255,255,0.7)">历史对比 / 预测</text>
+        </g>
+
+        <!-- 箭头：GBDT -> 输出 -->
+        <path d="M690,250 L770,250" fill="none" stroke="#0077b6" stroke-width="2" marker-end="url(#arrowA)"/>
+        <!-- 箭头：诊断分析 -> 输出 -->
+        <path d="M690,450 L770,450" fill="none" stroke="#00b4a0" stroke-width="2" marker-end="url(#arrowB)"/>
+
+        <!-- 阶段标注 -->
+        <text x="100" y="20" text-anchor="middle" font-size="11" font-weight="600" fill="#6b7c94">数据输入层</text>
+        <text x="350" y="108" text-anchor="middle" font-size="11" font-weight="600" fill="#008a7a">特征增强层</text>
+        <text x="600" y="170" text-anchor="middle" font-size="11" font-weight="600" fill="#005f92">预测层</text>
+        <text x="600" y="372" text-anchor="middle" font-size="11" font-weight="600" fill="#008a7a">智能诊断层</text>
+        <text x="855" y="170" text-anchor="middle" font-size="11" font-weight="600" fill="#14213d">输出层</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- 方案 A 详情 -->
+<section class="section" id="solution-a">
+  <div class="section-inner">
+    <div class="section-head">
+      <span class="section-eyebrow">04 · 方案详解</span>
+      <h2>路线 A：大模型诊断分析</h2>
+      <p>
+        将 GBDT 的数值预测结果与原始特征数据一同输入大模型，由大模型结合桥梁工程领域知识，
+        生成结构化的健康诊断报告。这是投入产出比最高的升级方向。
+      </p>
+    </div>
+
+    <div class="solution-steps">
+      <div class="step-block">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h4>健康等级划分与阈值体系</h4>
+          <p>
+            根据桥梁类型、设计规范和历史数据，建立 5 级健康等级标准（优秀 / 良好 / 一般 / 较差 / 危险），
+            为每个特征设定预警阈值（位移、超限次数等）。这是大模型做诊断的"标尺"，决定了诊断的专业性。
+          </p>
+          <div class="step-meta">
+            <span>📋 产出：健康等级标准文档</span>
+            <span>⏱ 周期：2-3天</span>
+            <span>👥 角色：桥梁工程师 + 算法工程师</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-block">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h4>领域知识库构建与 RAG 检索</h4>
+          <p>
+            将桥梁设计参数、各类型病害机理、养护规范、历史处置案例等资料整理为结构化知识库。
+            大模型生成诊断时，通过 RAG 检索相关规范和相似案例，确保诊断结论有依据、建议可落地。
+          </p>
+          <div class="step-meta">
+            <span>📋 产出：知识库 + 检索链路</span>
+            <span>⏱ 周期：3-5天</span>
+            <span>👥 角色：桥梁工程师 + 算法工程师</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-block">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h4>诊断 Prompt 模板设计与调优</h4>
+          <p>
+            设计多轮迭代的诊断 Prompt 模板，包含：特征值描述、预测结果、健康等级、相关知识库检索结果。
+            输出格式统一为：健康评估结论 / 主要风险因素 / 可能原因分析 / 维护建议（短中长三期）。
+            通过真实样本反复调优，确保报告专业性、准确性和一致性。
+          </p>
+          <div class="step-meta">
+            <span>📋 产出：Prompt 模板 + 评估标准</span>
+            <span>⏱ 周期：3-5天</span>
+            <span>👥 角色：算法工程师 + 桥梁工程师（评审）</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-block">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <h4>诊断服务 API 封装与集成</h4>
+          <p>
+            将诊断流程封装为标准化 API：输入 6 维特征值 → 返回 JSON 格式诊断结果（含健康等级、风险列表、原因分析、维护建议）。
+            同时支持单桥实时诊断和批量报告生成两种调用模式。与现有 GBDT 预测接口串联，形成完整的预测+诊断链路。
+          </p>
+          <div class="step-meta">
+            <span>📋 产出：诊断 API 服务 / 批量报告工具</span>
+            <span>⏱ 周期：3-4天</span>
+            <span>👥 角色：后端工程师</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 方案 B 详情 -->
+<section class="section section--alt" id="solution-b">
+  <div class="section-inner">
+    <div class="section-head">
+      <span class="section-eyebrow">05 · 方案详解</span>
+      <h2>路线 B：大模型特征工程</h2>
+      <p>
+        从更多模态的原始数据中，用大模型提取传统特征工程难以覆盖的信息维度，
+        与现有 6 维特征融合，训练更高精度的预测模型。前提是有可用的非结构化数据源。
+      </p>
+    </div>
+
+    <div class="solutions-grid">
+      <div class="solution-col solution-col--a">
+        <h3><span class="solution-label">方向 B1</span> 巡检文本 → 结构化特征</h3>
+        <p style="font-size:14px; color:var(--color-ink-soft); margin-bottom:16px;">
+          从历史巡检记录中，用大模型批量抽取结构化病害特征，补充现有统计特征的信息维度。
+        </p>
+        <div style="background:var(--color-surface); border:1px solid var(--color-line); border-radius:var(--radius-md); padding:18px; margin-bottom:16px;">
+          <h4 style="font-size:13px; color:var(--color-ink-mute); text-transform:uppercase; letter-spacing:.05em; margin-bottom:10px;">可提取的特征</h4>
+          <ul style="list-style:none; padding:0; font-size:13px; color:var(--color-ink-soft); line-height:1.7;">
+            <li>✅ 裂缝数量、最大宽度、分布位置</li>
+            <li>✅ 锈蚀程度（轻/中/重）、面积占比</li>
+            <li>✅ 支座老化等级、变形情况</li>
+            <li>✅ 基础沉降趋势、不均匀沉降</li>
+            <li>✅ 累计病害条目数、本期新增数</li>
+            <li>✅ 病害发展速率（与历史对比）</li>
+          </ul>
+        </div>
+        <div style="background:var(--color-amber-soft); border-left:3px solid var(--color-amber); padding:12px 16px; border-radius:4px; font-size:13px; color:#5a3800;">
+          <strong>预期提升：</strong>新增 10-20 维病害特征，
+          对表观劣化类桥梁的预测精度提升明显，R² 预计 +1.5~2.5%。
+        </div>
+      </div>
+
+      <div class="solution-col solution-col--b">
+        <h3><span class="solution-label">方向 B2</span> 桥梁图像 → 视觉特征</h3>
+        <p style="font-size:14px; color:var(--color-ink-soft); margin-bottom:16px;">
+          用多模态大模型或视觉模型从巡检照片、无人机航拍中提取表观病害特征，与传感器内部响应互补。
+        </p>
+        <div style="background:var(--color-surface); border:1px solid var(--color-line); border-radius:var(--radius-md); padding:18px; margin-bottom:16px;">
+          <h4 style="font-size:13px; color:var(--color-ink-mute); text-transform:uppercase; letter-spacing:.05em; margin-bottom:10px;">可提取的特征</h4>
+          <ul style="list-style:none; padding:0; font-size:13px; color:var(--color-ink-soft); line-height:1.7;">
+            <li>✅ 表观病害综合评分</li>
+            <li>✅ 裂缝视觉等级（长度/宽度/密度）</li>
+            <li>✅ 混凝土表面状态（剥落/露筋/渗水）</li>
+            <li>✅ 支座变形与老化视觉评估</li>
+            <li>✅ 下部结构冲刷情况</li>
+            <li>✅ 构件完整性评分</li>
+          </ul>
+        </div>
+        <div style="background:var(--color-teal-soft); border-left:3px solid var(--color-teal); padding:12px 16px; border-radius:4px; font-size:13px; color:#005a50;">
+          <strong>预期提升：</strong>视觉特征与传感器特征互补性最强，
+          新增 8-15 维视觉特征，R² 预计 +2~3%。
+        </div>
+      </div>
+    </div>
+
+    <!-- 新增：方向 B3 时序特征 -->
+    <div style="margin-top:32px;">
+      <div style="background: linear-gradient(135deg, #f0f7fc 0%, #ffffff 100%); border:1px solid var(--color-line); border-left:4px solid #6c5ce7; border-radius:var(--radius-md); padding:24px 28px;">
+        <h3 style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+          <span class="solution-label" style="background:#e8e4ff; color:#5a4acb;">方向 B3</span>
+          传感器时序 → 语义化模式特征
+        </h3>
+        <p style="font-size:14px; color:var(--color-ink-soft); margin-bottom:16px;">
+          传感器原始时序数据不仅包含均值、最大值等统计信息，还隐含着变化趋势、突变模式、周期异常、温度-位移响应关系等丰富信息。
+          让大模型阅读时序曲线的描述，抽取语义化的模式特征，与传统统计特征形成互补。
+        </p>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:16px; margin-bottom:16px;">
+          <div style="background:var(--color-surface); border:1px solid var(--color-line); border-radius:var(--radius-sm); padding:14px 16px;">
+            <div style="font-size:13px; font-weight:600; color:var(--color-ink); margin-bottom:6px;">趋势类特征</div>
+            <div style="font-size:12px; color:var(--color-ink-mute); line-height:1.6;">位移趋势斜率、月/季增长率、劣化加速/减速判断</div>
+          </div>
+          <div style="background:var(--color-surface); border:1px solid var(--color-line); border-radius:var(--radius-sm); padding:14px 16px;">
+            <div style="font-size:13px; font-weight:600; color:var(--color-ink); margin-bottom:6px;">突变类特征</div>
+            <div style="font-size:12px; color:var(--color-ink-mute); line-height:1.6;">突变次数、最大突变量、突变发生位置（温度/荷载关联）</div>
+          </div>
+          <div style="background:var(--color-surface); border:1px solid var(--color-line); border-radius:var(--radius-sm); padding:14px 16px;">
+            <div style="font-size:13px; font-weight:600; color:var(--color-ink); margin-bottom:6px;">响应关系特征</div>
+            <div style="font-size:12px; color:var(--color-ink-mute); line-height:1.6;">温度-位移相关性、荷载-应变响应系数、滞后效应评估</div>
+          </div>
+          <div style="background:var(--color-surface); border:1px solid var(--color-line); border-radius:var(--radius-sm); padding:14px 16px;">
+            <div style="font-size:13px; font-weight:600; color:var(--color-ink); margin-bottom:6px;">异常模式特征</div>
+            <div style="font-size:12px; color:var(--color-ink-mute); line-height:1.6;">异常波动频率、夜间异常位移、周期性异常模式识别</div>
+          </div>
+        </div>
+        <div style="background:#e8e4ff; border-left:3px solid #6c5ce7; padding:12px 16px; border-radius:4px; font-size:13px; color:#4a3ca8;">
+          <strong>实施策略：</strong>时序特征建议采用"传统统计特征为主、大模型语义特征为辅"的策略。
+          趋势、突变等能用统计方法算的用统计方法算（更快、更准、更便宜），
+          大模型负责识别复杂的模式组合和语义化描述。R² 预计 +1~2%。
+        </div>
+      </div>
+    </div>
+
+    <!-- B 方案实施步骤 -->
+    <div style="margin-top:36px;">
+      <h3 style="margin-bottom:18px;">通用实施步骤</h3>
+      <div class="solution-steps">
+        <div class="step-block">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h4>数据盘点与标注方案设计</h4>
+            <p>盘点可用的原始数据（文本/图像/时序），评估数据质量和覆盖度。
+            设计特征抽取的标注规范，准备少量标注样本用于 few-shot 或验证。</p>
+            <div class="step-meta">
+              <span>⏱ 周期：5-7天</span>
+              <span>👥 角色：数据工程师 + 桥梁工程师</span>
+            </div>
+          </div>
+        </div>
+        <div class="step-block">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h4>大模型特征抽取管线搭建</h4>
+            <p>构建特征抽取的 Prompt 管线（文本结构化 / 多模态视觉特征），
+            加入一致性校验和异常值过滤。批量处理历史数据，生成新特征数据集。</p>
+            <div class="step-meta">
+              <span>⏱ 周期：7-10天</span>
+              <span>👥 角色：算法工程师</span>
+            </div>
+          </div>
+        </div>
+        <div class="step-block">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h4>特征融合与新模型训练</h4>
+            <p>将大模型提取的新特征与原有 6 维特征拼接，做特征重要性分析和降维筛选。
+            训练新的融合模型（GBDT/XGBoost/MLP），与 baseline 做量化对比，验证提升效果。</p>
+            <div class="step-meta">
+              <span>⏱ 周期：7-14天</span>
+              <span>👥 角色：算法工程师</span>
+            </div>
+          </div>
+        </div>
+        <div class="step-block">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <h4>上线部署与持续迭代</h4>
+            <p>新模型替换原有 GBDT，特征抽取管线纳入生产流程。
+            建立特征质量监控和模型漂移检测机制，持续迭代优化。</p>
+            <div class="step-meta">
+              <span>⏱ 周期：5-7天</span>
+              <span>👥 角色：算法工程师 + 运维工程师</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 实施路径 -->
+<section class="section section--dark" id="roadmap">
+  <div class="section-inner">
+    <div class="section-head">
+      <span class="section-eyebrow">06 · 实施路径</span>
+      <h2>分四阶段落地，小步快跑验证价值</h2>
+      <p>
+        建议采用"先诊断后特征、先 MVP 后完善"的分阶段实施策略。
+        每阶段都有明确的交付物和验收标准，前一阶段验证通过后再进入下一阶段，控制风险和投入。
+      </p>
+    </div>
+
+    <div class="roadmap">
+      <div class="phase-card">
+        <div class="phase-label">Phase 1</div>
+        <div class="phase-title">诊断分析 MVP</div>
+        <div class="phase-duration">第 1-2 周</div>
+        <ul>
+          <li>健康等级标准制定</li>
+          <li>基础 Prompt 模板开发</li>
+          <li>单桥诊断 Demo 上线</li>
+          <li>桥梁工程师评审验证</li>
+        </ul>
+      </div>
+
+      <div class="phase-card">
+        <div class="phase-label">Phase 2</div>
+        <div class="phase-title">诊断系统完善</div>
+        <div class="phase-duration">第 3-4 周</div>
+        <ul>
+          <li>RAG 知识库接入</li>
+          <li>批量报告生成功能</li>
+          <li>异常预警推送机制</li>
+          <li>正式生产环境部署</li>
+        </ul>
+      </div>
+
+      <div class="phase-card">
+        <div class="phase-label">Phase 3</div>
+        <div class="phase-title">特征工程探索</div>
+        <div class="phase-duration">第 5-8 周</div>
+        <ul>
+          <li>多源数据盘点与接入</li>
+          <li>巡检文本特征抽取</li>
+          <li>（可选）图像视觉特征</li>
+          <li>特征质量评估</li>
+        </ul>
+      </div>
+
+      <div class="phase-card">
+        <div class="phase-label">Phase 4</div>
+        <div class="phase-title">融合模型升级</div>
+        <div class="phase-duration">第 9-12 周</div>
+        <ul>
+          <li>特征融合模型训练</li>
+          <li>精度对比与 A/B 验证</li>
+          <li>新模型灰度上线</li>
+          <li>全量切换 + 监控体系</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 风险提示 -->
+<section class="section" id="risks">
+  <div class="section-inner">
+    <div class="section-head">
+      <span class="section-eyebrow">07 · 风险提示</span>
+      <h2>实施中的关键风险与应对建议</h2>
+      <p>
+        大模型技术在工程领域落地需要处理好专业性、稳定性和成本等问题。
+        以下是实施过程中需要重点关注的风险点及应对思路。
+      </p>
+    </div>
+
+    <div class="risk-grid">
+      <div class="risk-item">
+        <h4>诊断准确性 <span class="risk-level risk-level--high">高风险</span></h4>
+        <p>
+          大模型可能生成"看起来专业但实际错误"的诊断结论（幻觉问题）。
+          应对：严格限定输出格式、增加知识库校验、关键结论必须引用规范依据、建立人工复核机制。
+        </p>
+      </div>
+
+      <div class="risk-item">
+        <h4>调用成本 <span class="risk-level">中风险</span></h4>
+        <p>
+          每座桥每次诊断都调用大模型，批量场景下成本可能较高。
+          应对：仅对异常桥梁触发详细诊断、正常桥梁生成简版报告、使用小模型蒸馏、增加结果缓存。
+        </p>
+      </div>
+
+      <div class="risk-item">
+        <h4>特征质量不稳定 <span class="risk-level">中风险</span></h4>
+        <p>
+          大模型抽取的特征可能存在一致性问题，影响模型稳定性。
+          应对：设计多轮校验、输出置信度、低置信度特征人工复核、定期评估特征分布稳定性。
+        </p>
+      </div>
+
+      <div class="risk-item">
+        <h4>数据隐私安全 <span class="risk-level">中风险</span></h4>
+        <p>
+          桥梁结构数据和巡检记录属于敏感信息，直接发送给公有云大模型有合规风险。
+          应对：优先使用私有化部署模型或本地推理、数据脱敏后再调用、签署数据保密协议。
+        </p>
+      </div>
+
+      <div class="risk-item">
+        <h4>领域知识不足 <span class="risk-level">中风险</span></h4>
+        <p>
+          通用大模型缺乏桥梁工程专业知识，诊断深度可能不够。
+          应对：投入领域专家构建知识库、使用桥梁专业文献做微调、建立人机协同的诊断模式。
+        </p>
+      </div>
+
+      <div class="risk-item">
+        <h4>效果验证困难 <span class="risk-level risk-level--low">低风险</span></h4>
+        <p>
+          诊断分析的效果不像预测精度那样可量化评估。
+          应对：制定人工评分标准、邀请多位工程师盲评、跟踪实际养护决策的改善效果。
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 底部总结 -->
+<section class="summary-band">
+  <div style="max-width: var(--content-max); margin: 0 auto; padding: 0 clamp(20px, 4vw, 40px);">
+    <h2>建议：双线推进，先快后深</h2>
+    <p>
+      三类数据齐备的条件下，两条路线都具备落地基础。建议<strong>路线 A 先启动</strong>（1-2 周出 MVP，快速验证价值），
+      <strong>路线 B 随后并行推进</strong>（巡检文本优先、图像次之、时序补充），
+      预期最终可将模型 R² 从 0.92 提升至 0.95+，同时输出可直接用于养护决策的诊断报告。
+    </p>
+    <button class="summary-cta" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+      ↑ 回到顶部查看完整方案
+    </button>
+  </div>
+</section>
+
+<!-- 页脚 -->
+<footer class="footer">
+  <div class="footer-inner">
+    <span>BridgeAI 桥梁健康分析系统 · 大模型技术升级建议书</span>
+    <span>版本 v1.0 · 2026年9月</span>
+  </div>
+</footer>
+
+<script>
+(function() {
+  'use strict';
+
+  // 平滑滚动拦截
+  document.querySelectorAll('.nav-links a[href^="#"]').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      var id = this.getAttribute('href').slice(1);
+      var target = document.getElementById(id);
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  // 滚动时高亮当前章节
+  var sections = document.querySelectorAll('section[id]');
+  var navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
+  var navHeight = 60;
+
+  function highlightNav() {
+    var scrollPos = window.scrollY + navHeight + 20;
+    var current = '';
+    sections.forEach(function(sec) {
+      if (sec.offsetTop <= scrollPos) {
+        current = sec.id;
+      }
+    });
+    navLinks.forEach(function(link) {
+      if (link.getAttribute('href') === '#' + current) {
+        link.style.background = 'var(--color-surface)';
+        link.style.color = 'var(--color-accent)';
+        link.style.fontWeight = '600';
+      } else {
+        link.style.background = '';
+        link.style.color = '';
+        link.style.fontWeight = '';
+      }
+    });
+  }
+
+  var ticking = false;
+  window.addEventListener('scroll', function() {
+    if (!ticking) {
+      requestAnimationFrame(function() {
+        highlightNav();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  });
+
+  highlightNav();
+})();
+</script>
+
+</body>
+</html>
