@@ -1,0 +1,1251 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>桥梁健康小模型落地全流程手册</title>
+<style>
+:root {
+  --color-canvas: #f8f9fc;
+  --color-surface: #ffffff;
+  --color-surface-alt: #f1f3f9;
+  --color-text: #1a1d29;
+  --color-text-secondary: #5b6270;
+  --color-text-tertiary: #8b92a3;
+  --color-border: #e2e5ef;
+  --color-border-strong: #c9cee0;
+  --color-accent: #2d6cdf;
+  --color-accent-ink: #ffffff;
+  --color-accent-soft: #e8f0fe;
+  --color-step: #1a1d29;
+  --color-step-ink: #ffffff;
+  --color-success: #1a9b6b;
+  --color-success-soft: #e6f7f0;
+  --color-warning: #d98028;
+  --color-warning-soft: #fef3e6;
+  --color-danger: #d8483f;
+  --color-danger-soft: #fdecea;
+  --color-code-bg: #1a1d29;
+  --color-code-ink: #e8eaf2;
+
+  --font-body: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+
+  --space-xs: 6px;
+  --space-sm: 12px;
+  --space-md: 20px;
+  --space-lg: 32px;
+  --space-xl: 56px;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--color-text);
+  background: var(--color-canvas);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 顶部导航 */
+.top-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--color-border);
+}
+.top-nav-inner {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 12px var(--space-md);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+.top-nav-title {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.top-nav-title .badge {
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+.top-nav-links {
+  display: flex;
+  gap: var(--space-md);
+  font-size: 13px;
+  overflow-x: auto;
+  flex: 1;
+  justify-content: flex-end;
+}
+.top-nav-links a {
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color .15s;
+}
+.top-nav-links a:hover { color: var(--color-accent); }
+
+/* 主容器 */
+.container {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: var(--space-xl) var(--space-md);
+}
+
+/* Hero */
+.hero {
+  padding-bottom: var(--space-xl);
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--space-xl);
+}
+.hero-kicker {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-accent);
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-sm);
+}
+.hero h1 {
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: var(--space-md);
+  letter-spacing: -0.02em;
+}
+.hero-subtitle {
+  font-size: 17px;
+  color: var(--color-text-secondary);
+  max-width: 640px;
+  line-height: 1.6;
+}
+.hero-meta {
+  display: flex;
+  gap: var(--space-lg);
+  margin-top: var(--space-lg);
+  flex-wrap: wrap;
+}
+.hero-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.hero-meta-label {
+  font-size: 12px;
+  color: var(--color-text-tertiary);
+}
+.hero-meta-value {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+/* 章节 */
+section {
+  margin-bottom: var(--space-xl);
+  scroll-margin-top: 80px;
+}
+section h2 {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: var(--space-sm);
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  letter-spacing: -0.01em;
+}
+section h2 .step-num {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 600;
+  background: var(--color-step);
+  color: var(--color-step-ink);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  letter-spacing: 0;
+}
+section h3 {
+  font-size: 17px;
+  font-weight: 600;
+  margin: var(--space-md) 0 var(--space-sm);
+}
+section p {
+  margin-bottom: var(--space-sm);
+  color: var(--color-text);
+}
+section p.lead {
+  font-size: 16px;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-md);
+  max-width: 720px;
+}
+
+/* 步骤卡片 */
+.step-block {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-md);
+}
+.step-block h3 {
+  margin-top: 0;
+  font-size: 18px;
+}
+
+/* 数据流程图 */
+.data-flow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-sm);
+  margin: var(--space-md) 0;
+}
+.data-flow-item {
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  text-align: center;
+  position: relative;
+}
+.data-flow-item .icon {
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+.data-flow-item h4 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.data-flow-item p {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+/* 表格 */
+.table-wrap {
+  overflow-x: auto;
+  margin: var(--space-md) 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+th, td {
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+}
+th {
+  background: var(--color-surface-alt);
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+tr:last-child td { border-bottom: none; }
+td code { font-size: 12px; }
+
+/* 代码块 */
+pre {
+  background: var(--color-code-bg);
+  color: var(--color-code-ink);
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.6;
+  margin: var(--space-sm) 0;
+}
+code {
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+p code, li code {
+  background: var(--color-surface-alt);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12.5px;
+}
+
+/* 提示框 */
+.callout {
+  padding: var(--space-md) var(--space-md) var(--space-md) var(--space-lg);
+  border-radius: var(--radius-md);
+  margin: var(--space-md) 0;
+  border-left: 4px solid;
+}
+.callout-title {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+.callout p { margin: 0; font-size: 14px; }
+.callout.tip {
+  background: var(--color-accent-soft);
+  border-color: var(--color-accent);
+}
+.callout.success {
+  background: var(--color-success-soft);
+  border-color: var(--color-success);
+}
+.callout.warning {
+  background: var(--color-warning-soft);
+  border-color: var(--color-warning);
+}
+.callout.danger {
+  background: var(--color-danger-soft);
+  border-color: var(--color-danger);
+}
+
+/* 列表 */
+ul, ol {
+  margin: var(--space-sm) 0 var(--space-sm) var(--space-lg);
+}
+li {
+  margin-bottom: 6px;
+  color: var(--color-text);
+}
+
+/* 架构图 */
+.arch-diagram {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  margin: var(--space-md) 0;
+  overflow-x: auto;
+}
+.arch-layers {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+.arch-layer {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: stretch;
+  flex-wrap: wrap;
+}
+.arch-layer-label {
+  min-width: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-tertiary);
+  padding-right: var(--space-sm);
+  text-align: right;
+}
+.arch-box {
+  flex: 1;
+  min-width: 120px;
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm) var(--space-md);
+  text-align: center;
+}
+.arch-box h5 {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.arch-box p {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+.arch-box.primary {
+  background: var(--color-accent-soft);
+  border-color: var(--color-accent);
+}
+.arch-box.primary h5 { color: var(--color-accent); }
+
+/* 时间线/里程碑 */
+.milestones {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-md);
+  margin: var(--space-md) 0;
+}
+.milestone {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  border-top: 3px solid var(--color-accent);
+}
+.milestone .duration {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-accent);
+  margin-bottom: 6px;
+}
+.milestone h4 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.milestone ul {
+  margin: 6px 0 0 18px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+.milestone li { margin-bottom: 3px; }
+
+/* FAQ */
+.faq-item {
+  border-bottom: 1px solid var(--color-border);
+  padding: var(--space-md) 0;
+}
+.faq-item:last-child { border-bottom: none; }
+.faq-q {
+  font-weight: 600;
+  font-size: 15px;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.faq-q::before {
+  content: "Q";
+  background: var(--color-accent);
+  color: white;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.faq-a {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  padding-left: 32px;
+}
+
+/* Footer */
+footer {
+  margin-top: var(--space-xl);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--color-border);
+  font-size: 13px;
+  color: var(--color-text-tertiary);
+  text-align: center;
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .container { padding: var(--space-lg) var(--space-sm); }
+  .hero h1 { font-size: 26px; }
+  .step-block { padding: var(--space-md); }
+  .top-nav-links { display: none; }
+  .arch-layer-label { display: none; }
+}
+
+/* 打印 */
+@media print {
+  .top-nav { display: none; }
+  body { background: white; font-size: 12px; }
+  .container { max-width: 100%; padding: 0; }
+  .step-block, .callout, pre { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <div class="top-nav-inner">
+    <div class="top-nav-title">
+      <span>桥梁健康小模型落地手册</span>
+      <span class="badge">实操版</span>
+    </div>
+    <div class="top-nav-links">
+      <a href="#step1">① 数据准备</a>
+      <a href="#step2">② 数据处理</a>
+      <a href="#step3">③ 模型微调</a>
+      <a href="#step4">④ 效果验证</a>
+      <a href="#step5">⑤ 模型部署</a>
+      <a href="#step6">⑥ 平台集成</a>
+      <a href="#faq">FAQ</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-kicker">Bridge AI · 落地指南</div>
+  <h1>桥梁健康小模型落地全流程</h1>
+  <p class="hero-subtitle">
+    从原始数据采集到小模型微调部署，再到集成进健康监测平台——一份可以直接照着做的实操手册。
+    基于 Qwen2.5-0.5B + LoRA，CPU 可跑，成本可控，效果可验证。
+  </p>
+  <div class="hero-meta">
+    <div class="hero-meta-item">
+      <span class="hero-meta-label">基础模型</span>
+      <span class="hero-meta-value">Qwen2.5-0.5B-Instruct</span>
+    </div>
+    <div class="hero-meta-item">
+      <span class="hero-meta-label">微调方法</span>
+      <span class="hero-meta-value">LoRA 低秩适配</span>
+    </div>
+    <div class="hero-meta-item">
+      <span class="hero-meta-label">部署硬件</span>
+      <span class="hero-meta-value">CPU 即可 / GPU 加速</span>
+    </div>
+    <div class="hero-meta-item">
+      <span class="hero-meta-label">预期周期</span>
+      <span class="hero-meta-value">2~4 周 MVP</span>
+    </div>
+  </div>
+</div>
+
+<!-- 整体架构概览 -->
+<section id="overview">
+  <h2><span class="step-num">0</span>整体架构一览</h2>
+  <p class="lead">先看清楚整个系统长什么样，再动手做每一步。模型不是孤立的，它要嵌到你现有的健康监测平台里。</p>
+
+  <div class="arch-diagram">
+    <div class="arch-layers">
+
+      <div class="arch-layer">
+        <div class="arch-layer-label">用户层</div>
+        <div class="arch-box primary" style="flex: 2;">
+          <h5>健康监测平台前端</h5>
+          <p>Web / 大屏 / 移动端 · 展示诊断报告</p>
+        </div>
+      </div>
+
+      <div class="arch-layer">
+        <div class="arch-layer-label">服务层</div>
+        <div class="arch-box">
+          <h5>平台后端服务</h5>
+          <p>数据管理 · 用户权限 · 告警逻辑</p>
+        </div>
+        <div class="arch-box primary">
+          <h5>AI 诊断服务</h5>
+          <p>调用小模型 · 生成诊断报告 · 对话问答</p>
+        </div>
+      </div>
+
+      <div class="arch-layer">
+        <div class="arch-layer-label">模型层</div>
+        <div class="arch-box">
+          <h5>GBDT 预测模型</h5>
+          <p>健康评分 · 数值预测 · R²=0.92</p>
+        </div>
+        <div class="arch-box primary">
+          <h5>桥梁领域小模型</h5>
+          <p>Qwen-0.5B + LoRA · 自然语言诊断</p>
+        </div>
+      </div>
+
+      <div class="arch-layer">
+        <div class="arch-layer-label">数据层</div>
+        <div class="arch-box">
+          <h5>传感器时序库</h5>
+          <p>InfluxDB / TimescaleDB</p>
+        </div>
+        <div class="arch-box">
+          <h5>巡检记录库</h5>
+          <p>MySQL / MongoDB</p>
+        </div>
+        <div class="arch-box">
+          <h5>图像/视频库</h5>
+          <p>桥梁照片 · 无人机巡检</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="callout tip">
+    <div class="callout-title">💡 核心思路</div>
+    <p><strong>GBDT 负责"算分数"，小模型负责"说人话"。</strong>两个模型配合使用：GBDT 输出健康评分和异常特征，小模型把这些数字翻译成工程师能看懂的自然语言诊断报告，还能回答巡检人员的专业问题。</p>
+  </div>
+</section>
+
+<!-- Step 1 -->
+<section id="step1">
+  <h2><span class="step-num">1</span>数据准备：盘点你有哪些数据</h2>
+  <p class="lead">数据是模型的上限。先把手里的存货盘点清楚，再决定先训什么、怎么训。</p>
+
+  <div class="step-block">
+    <h3>1.1 三类核心数据资产</h3>
+
+    <div class="data-flow">
+      <div class="data-flow-item">
+        <div class="icon">📊</div>
+        <h4>传感器时序数据</h4>
+        <p>位移/应变/温度/振动<br>高频、海量、数值型</p>
+      </div>
+      <div class="data-flow-item">
+        <div class="icon">📝</div>
+        <h4>巡检记录文本</h4>
+        <p>日常巡检/定期检测报告<br>半结构化、有模板</p>
+      </div>
+      <div class="data-flow-item">
+        <div class="icon">📷</div>
+        <h4>桥梁图像</h4>
+        <p>人工拍照/无人机巡检<br>裂缝/锈蚀/病害</p>
+      </div>
+    </div>
+
+    <h3>1.2 不同数据的用途和优先级</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>数据类型</th>
+            <th>适合训练什么能力</th>
+            <th>加工难度</th>
+            <th>优先级</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>巡检记录/检测报告</td>
+            <td>诊断问答、报告生成、维修建议</td>
+            <td>⭐⭐ 中等</td>
+            <td><strong style="color: var(--color-success);">P0 最高</strong></td>
+          </tr>
+          <tr>
+            <td>维修案例/历史处理记录</td>
+            <td>故障排查、方案推荐</td>
+            <td>⭐⭐⭐ 较难</td>
+            <td><strong style="color: var(--color-success);">P0 最高</strong></td>
+          </tr>
+          <tr>
+            <td>传感器异常事件记录</td>
+            <td>异常诊断、趋势分析</td>
+            <td>⭐⭐⭐ 较难</td>
+            <td>P1 较高</td>
+          </tr>
+          <tr>
+            <td>桥梁技术文档/规范</td>
+            <td>知识问答、规范查询</td>
+            <td>⭐ 简单</td>
+            <td>P1 较高</td>
+          </tr>
+          <tr>
+            <td>桥梁图像/视频</td>
+            <td>视觉识别（需要多模态模型）</td>
+            <td>⭐⭐⭐⭐ 难</td>
+            <td>P2 后续</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout warning">
+      <div class="callout-title">⚠️ 建议</div>
+      <p><strong>先从巡检记录和维修案例入手。</strong>这两类数据最容易转成问答对，微调后效果最明显，能最快看到价值。传感器数据和图像数据可以后面再搞。</p>
+    </div>
+  </div>
+</section>
+
+<!-- Step 2 -->
+<section id="step2">
+  <h2><span class="step-num">2</span>数据处理：把原始数据变成问答对</h2>
+  <p class="lead">原始数据不能直接喂给模型，需要加工成「指令-回答」格式的训练数据。这一步决定了微调效果的上限。</p>
+
+  <div class="step-block">
+    <h3>2.1 巡检记录怎么变问答对</h3>
+    <p>巡检记录一般包含：时间、桥梁、部位、病害描述、处理建议。从中提取出「问题→答案」的配对：</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>原始记录</th>
+            <th>转成问答对</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-size: 13px; color: var(--color-text-secondary);">
+              部位：3#墩支座<br>
+              病害：钢板锈蚀，面积约0.5㎡<br>
+              建议：除锈防腐，定期观察
+            </td>
+            <td style="font-size: 13px;">
+              <strong>Q:</strong> 支座钢板锈蚀了怎么办？<br>
+              <strong>A:</strong> 支座钢板锈蚀应进行除锈防腐处理，并定期观察锈蚀发展情况。
+            </td>
+          </tr>
+          <tr>
+            <td style="font-size: 13px; color: var(--color-text-secondary);">
+              部位：箱梁底板<br>
+              病害：纵向裂缝，宽0.3mm，长1.2m<br>
+              建议：灌胶封闭，观测发展
+            </td>
+            <td style="font-size: 13px;">
+              <strong>Q:</strong> 箱梁底板出现0.3mm宽的纵向裂缝怎么处理？<br>
+              <strong>A:</strong> 箱梁底板0.3mm纵向裂缝需先检测深度，表面裂缝可灌胶封闭处理，处理后定期观测是否继续发展。
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>2.2 数据格式规范</h3>
+    <p>统一存成 JSON 格式，每条包含 <code>instruction</code>（问题）、<code>input</code>（补充信息，可空）、<code>output</code>（答案）：</p>
+
+    <pre>{
+  "instruction": "支座钢板锈蚀面积0.5平米，严重吗？怎么处理？",
+  "input": "部位：3#墩支座，桥梁类型：连续梁桥",
+  "output": "支座钢板锈蚀面积0.5㎡属于轻度锈蚀，暂不影响结构安全。建议：1）除锈防腐处理；2）每季度观察一次；3）如锈蚀面积扩大，安排专项检测。"
+}</pre>
+
+    <h3>2.3 数据量建议</h3>
+    <ul>
+      <li><strong>起步阶段：50~100条</strong> — 能看到明显的领域倾向，适合验证可行性</li>
+      <li><strong>可用阶段：300~500条</strong> — 常见问题都能答得不错，可以内部试用</li>
+      <li><strong>实用阶段：1000~3000条</strong> — 覆盖面广，回答稳定，可对外服务</li>
+      <li><strong>高质量 > 大数量</strong> — 100条精心打磨的数据 > 1000条粗制滥造的数据</li>
+    </ul>
+
+    <h3>2.4 数据增强技巧</h3>
+    <p>数据不够时，可以用这些方法扩充（但要保证质量）：</p>
+    <ul>
+      <li><strong>换问法</strong>：同一个答案，写3~5种不同的问法（"怎么办""怎么处理""咋整""处理方案是什么"）</li>
+      <li><strong>换场景</strong>：把"支座锈蚀"换成"梁底锈蚀""墩柱锈蚀""护栏锈蚀"等不同部位</li>
+      <li><strong>递进式</strong>：做简单→中等→详细三个层级的回答，适应不同需求</li>
+      <li><strong>用大模型生成</strong>：用GPT/Claude等大模型批量生成问答对，人工抽检质量</li>
+    </ul>
+
+    <div class="callout danger">
+      <div class="callout-title">❌ 数据质量红线</div>
+      <p>1）不要让模型学错误的知识——所有回答必须符合桥梁工程规范，错误的答案会被模型学进去<br>
+      2）不要全是一个语气和长度——数据多样性越好，模型生成越自然<br>
+      3）不要重复数据太多——重复超过3次的样本会导致过拟合</p>
+    </div>
+  </div>
+</section>
+
+<!-- Step 3 -->
+<section id="step3">
+  <h2><span class="step-num">3</span>模型微调：LoRA 训练实操</h2>
+  <p class="lead">用 LoRA（低秩适配）做微调，只训练模型不到万分之五的参数，CPU就能跑，成本极低。</p>
+
+  <div class="step-block">
+    <h3>3.1 环境准备</h3>
+    <p>需要安装的 Python 库：</p>
+    <pre>pip install transformers torch peft datasets modelscope xxhash</pre>
+
+    <h3>3.2 下载基础模型</h3>
+    <p>用阿里 ModelScope 国内源下载 Qwen2.5-0.5B-Instruct（约942MB）：</p>
+    <pre>from modelscope import snapshot_download
+model_dir = snapshot_download(
+    'qwen/Qwen2.5-0.5B-Instruct',
+    cache_dir='./model_cache'
+)</pre>
+
+    <h3>3.3 训练脚本核心代码</h3>
+    <p>LoRA 配置的关键参数：</p>
+    <pre>from peft import LoraConfig, get_peft_model, TaskType
+
+lora_config = LoraConfig(
+    task_type=TaskType.CAUSAL_LM,
+    r=8,                    # 秩，越大能力越强，但越容易过拟合
+    lora_alpha=16,           # 缩放系数，通常设为 2*r
+    lora_dropout=0.05,       #  dropout 防止过拟合
+    target_modules=[         # 要加 LoRA 的层
+        "q_proj", "k_proj", "v_proj", "o_proj"
+    ],
+    bias="none",
+)</pre>
+
+    <h3>3.4 关键超参怎么调</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>参数</th>
+            <th>推荐值</th>
+            <th>调大了会怎样</th>
+            <th>调小了会怎样</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>r</code>（秩）</td>
+            <td>8~32</td>
+            <td>能力强但易过拟合，参数量大</td>
+            <td>学得浅，但不容易过拟合</td>
+          </tr>
+          <tr>
+            <td><code>learning_rate</code></td>
+            <td>1e-4 ~ 3e-4</td>
+            <td>收敛快但可能震荡</td>
+            <td>稳但学得慢</td>
+          </tr>
+          <tr>
+            <td><code>num_train_epochs</code></td>
+            <td>5~15</td>
+            <td>过拟合风险大</td>
+            <td>学不充分</td>
+          </tr>
+          <tr>
+            <td><code>batch_size</code></td>
+            <td>2~8</td>
+            <td>训练稳但慢，显存不够</td>
+            <td>快但波动大</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-title">💡 怎么判断训练好了</div>
+      <p>看 loss 曲线：如果 loss 一直在下降，说明还在学；如果 loss 不再降了（平台期），就可以停了。
+      一般 10 个 epoch 左右足够，太多会过拟合——模型只会背训练数据，不会举一反三。</p>
+    </div>
+
+    <h3>3.5 训练输出产物</h3>
+    <p>LoRA 微调只保存小矩阵权重，文件很小：</p>
+    <ul>
+      <li><code>adapter_config.json</code> — LoRA 配置</li>
+      <li><code>adapter_model.safetensors</code> — LoRA 权重（通常只有几 MB）</li>
+    </ul>
+    <p>使用时把它加载到原模型上就行，不需要重新保存整个模型。</p>
+  </div>
+</section>
+
+<!-- Step 4 -->
+<section id="step4">
+  <h2><span class="step-num">4</span>效果验证：微调前后对比</h2>
+  <p class="lead">训完不能直接上线，得验证效果好不好、有没有学歪。</p>
+
+  <div class="step-block">
+    <h3>4.1 三维验证法</h3>
+
+    <div class="data-flow">
+      <div class="data-flow-item">
+        <div class="icon">👁️</div>
+        <h4>定性对比</h4>
+        <p>同问题微调前后<br>回答质量差异</p>
+      </div>
+      <div class="data-flow-item">
+        <div class="icon">📏</div>
+        <h4>定量指标</h4>
+        <p>loss 下降幅度<br>验证集准确率</p>
+      </div>
+      <div class="data-flow-item">
+        <div class="icon">👨‍🔧</div>
+        <h4>专家评估</h4>
+        <p>请桥梁工程师打分<br>准确性/完整性/实用性</p>
+      </div>
+    </div>
+
+    <h3>4.2 必测的对比问题</h3>
+    <ol>
+      <li><strong>训练集中有的问题</strong> — 检验模型有没有学到（应该答得很好）</li>
+      <li><strong>训练集没有但同领域的问题</strong> — 检验泛化能力（应该也能答）</li>
+      <li><strong>领域外的问题</strong> — 检验模型有没有"忘本"（通用知识还在不）</li>
+      <li><strong>陷阱题/反常识题</strong> — 检验模型会不会胡说（不知道就说不知道）</li>
+    </ol>
+
+    <h3>4.3 效果不好怎么排查</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>现象</th>
+            <th>可能原因</th>
+            <th>解决方法</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>回答跟没调差不多</td>
+            <td>训练不够 / 学习率太小</td>
+            <td>多加几个 epoch，或调大 lr</td>
+          </tr>
+          <tr>
+            <td>只会背标准答案，换个问法就不会</td>
+            <td>过拟合了</td>
+            <td>减少 epoch，增加数据多样性，增大 r</td>
+          </tr>
+          <tr>
+            <td>回答开始胡说八道</td>
+            <td>训练数据有错误</td>
+            <td>检查训练数据质量，清洗错误样本</td>
+          </tr>
+          <tr>
+            <td>回答特别简短/不完整</td>
+            <td>训练数据答案都太短</td>
+            <td>增加长回答的数据，调大 max_new_tokens</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- Step 5 -->
+<section id="step5">
+  <h2><span class="step-num">5</span>模型部署：做成 API 服务</h2>
+  <p class="lead">模型训好了，要封装成服务，让你的平台能调用。推荐用 FastAPI 做轻量服务。</p>
+
+  <div class="step-block">
+    <h3>5.1 最简部署方案</h3>
+    <pre>pip install fastapi uvicorn peft transformers</pre>
+
+    <p>服务端核心代码结构：</p>
+    <pre>from fastapi import FastAPI
+from pydantic import BaseModel
+from transformers import AutoModelForCausalLM, AutoTokenizer
+from peft import PeftModel
+
+app = FastAPI()
+
+# 启动时加载模型（只加载一次）
+MODEL_PATH = "./models/qwen-0.5b"
+LORA_PATH = "./lora_output/final_lora"
+
+tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
+base_model = AutoModelForCausalLM.from_pretrained(MODEL_PATH)
+model = PeftModel.from_pretrained(base_model, LORA_PATH)
+model = model.merge_and_unload()  # 合并权重加速推理
+
+class ChatRequest(BaseModel):
+    question: str
+    temperature: float = 0.3
+    max_tokens: int = 512
+
+@app.post("/api/diagnose")
+async def diagnose(req: ChatRequest):
+    messages = [{"role": "user", "content": req.question}]
+    text = tokenizer.apply_chat_template(
+        messages, tokenize=False, add_generation_prompt=True
+    )
+    inputs = tokenizer(text, return_tensors="pt")
+    
+    outputs = model.generate(
+        **inputs,
+        max_new_tokens=req.max_tokens,
+        temperature=req.temperature,
+        do_sample=True
+    )
+    response = tokenizer.decode(
+        outputs[0][inputs.input_ids.shape[1]:],
+        skip_special_tokens=True
+    )
+    return {"answer": response}</pre>
+
+    <p>启动服务：</p>
+    <pre>uvicorn server:app --host 0.0.0.0 --port 8000</pre>
+
+    <h3>5.2 桥梁诊断专用接口</h3>
+    <p>除了通用问答，还要做一个<strong>结构化诊断接口</strong>——平台传过来传感器数据和健康评分，模型生成诊断报告：</p>
+
+    <pre>@app.post("/api/bridge/diagnosis-report")
+async def generate_report(data: BridgeData):
+    """
+    输入：桥梁基本信息 + GBDT健康评分 + 异常特征 + 近期巡检记录
+    输出：结构化诊断报告（JSON + 文本）
+    """
+    prompt = f"""
+    你是桥梁健康监测专家。请根据以下数据生成诊断报告：
+    
+    【桥梁信息】
+    名称：{data.bridge_name}
+    类型：{data.bridge_type}
+    
+    【健康评分】
+    综合评分：{data.health_score}/100
+    
+    【异常特征】
+    {data.abnormal_features}
+    
+    【近期巡检记录】
+    {data.inspection_records}
+    
+    请输出：
+    1. 总体评估
+    2. 主要问题分析
+    3. 处理建议（分级：紧急/近期/长期）
+    4. 下次检查建议
+    """
+    # 调用模型生成报告...
+    return {"report": generated_report}</pre>
+
+    <h3>5.3 硬件要求和性能预估</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>部署方式</th>
+            <th>硬件配置</th>
+            <th>推理速度</th>
+            <th>并发能力</th>
+            <th>成本/月</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>CPU 部署</td>
+            <td>4核8G</td>
+            <td>~15 token/s</td>
+            <td>1~2 并发</td>
+            <td>~200元</td>
+          </tr>
+          <tr>
+            <td>GPU 部署（推荐）</td>
+            <td>T4 / 3090 单卡</td>
+            <td>~80 token/s</td>
+            <td>10~20 并发</td>
+            <td>~1500元</td>
+          </tr>
+          <tr>
+            <td>量化部署（INT4）</td>
+            <td>4G显存即可</td>
+            <td>~50 token/s</td>
+            <td>5~10 并发</td>
+            <td>~800元</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout success">
+      <div class="callout-title">✅ 推荐起步方案</div>
+      <p>先 CPU 部署跑通流程，验证业务价值。用户量上来了再上 GPU。4核8G的云服务器，
+      Qwen-0.5B 模型 CPU 推理大概 15 token/s，生成一份200字的诊断报告约10秒，
+      对于桥梁监测这种低频场景完全够用。</p>
+    </div>
+  </div>
+</section>
+
+<!-- Step 6 -->
+<section id="step6">
+  <h2><span class="step-num">6</span>平台集成：嵌入健康监测系统</h2>
+  <p class="lead">模型服务跑起来之后，要和你现有的健康监测平台对接，让用户在日常工作中就能用。</p>
+
+  <div class="step-block">
+    <h3>6.1 三个集成场景（从易到难）</h3>
+
+    <h3>场景一：AI 诊断助手（侧边栏对话）</h3>
+    <p>在平台里加一个 AI 对话入口，工程师遇到问题随时问：</p>
+    <ul>
+      <li>接入方式：前端加个聊天窗，后端调用 <code>/api/diagnose</code> 接口</li>
+      <li>开发量：1~2 天</li>
+      <li>用户：巡检人员、桥梁工程师</li>
+    </ul>
+
+    <h3>场景二：自动生成诊断报告</h3>
+    <p>每次传感器数据更新后，自动调用模型生成诊断分析，附在健康评分旁边：</p>
+    <ul>
+      <li>接入方式：GBDT算完分数后，同步/异步调用 <code>/api/bridge/diagnosis-report</code></li>
+      <li>开发量：3~5 天</li>
+      <li>展示位置：桥梁详情页 → 健康状态卡片</li>
+    </ul>
+
+    <h3>场景三：智能巡检辅助</h3>
+    <p>巡检人员上传照片和记录，AI 自动分析并给出处理建议：</p>
+    <ul>
+      <li>接入方式：巡检记录提交时触发 AI 分析，返回建议写入数据库</li>
+      <li>开发量：1~2 周</li>
+      <li>需要图像识别能力（后续扩展）</li>
+    </ul>
+
+    <h3>6.2 前后端对接方式</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>方案</th>
+            <th>实现方式</th>
+            <th>优点</th>
+            <th>缺点</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>直接 HTTP 调用</td>
+            <td>平台后端直接请求 AI 服务</td>
+            <td>简单直接</td>
+            <td>耦合紧，模型挂了平台也受影响</td>
+          </tr>
+          <tr>
+            <td>消息队列（推荐）</td>
+            <td>平台发消息到 MQ，AI 服务消费，结果写回</td>
+            <td>解耦、可异步、可重试</td>
+            <td>多了一层中间件</td>
+          </tr>
+          <tr>
+            <td>定时任务拉取</td>
+            <td>AI 服务定时扫描待分析数据</td>
+            <td>最简单，不需要改平台</td>
+            <td>有延迟，实时性差</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>6.3 上线前的安全检查</h3>
+    <ul>
+      <li><strong>输出审核</strong>：模型可能胡说，关键诊断建议要不要人工复核？建议初期所有 AI 结论都标注"AI 生成，仅供参考"</li>
+      <li><strong>限流保护</strong>：防止频繁调用把服务打爆</li>
+      <li><strong>日志记录</strong>：所有问答都要存日志，出了问题能追溯</li>
+      <li><strong>反馈机制</strong>：用户可以给 AI 回答点赞/点踩，收集数据持续优化</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 实施计划 -->
+<section id="roadmap">
+  <h2><span class="step-num">7</span>实施路线图</h2>
+  <p class="lead">按节奏推进，先做最小可用版本，再迭代优化。</p>
+
+  <div class="milestones">
+    <div class="milestone" style="border-top-color: var(--color-accent);">
+      <div class="duration">第 1 周 · 验证阶段</div>
+      <h4>MVP 跑通</h4>
+      <ul>
+        <li>整理 100 条问答数据</li>
+        <li>LoRA 微调跑通</li>
+        <li>效果对比验证</li>
+        <li>简单 API 服务</li>
+      </ul>
+    </div>
+    <div class="milestone" style="border-top-color: var(--color-success);">
+      <div class="duration">第 2 周 · 集成阶段</div>
+      <h4>平台对接</h4>
+      <ul>
+        <li>诊断报告接口开发</li>
+        <li>前端 AI 助手接入</li>
+        <li>日志和限流</li>
+        <li>内测 + 收集反馈</li>
+      </ul>
+    </div>
+    <div class="milestone" style="border-top-color: var(--color-warning);">
+      <div class="duration">第 3-4 周 · 优化阶段</div>
+      <h4>数据迭代</h4>
+      <ul>
+        <li>扩充到 500+ 条数据</li>
+        <li>根据反馈修正模型</li>
+        <li>性能调优（量化/加速）</li>
+        <li>正式上线</li>
+      </ul>
+    </div>
+    <div class="milestone" style="border-top-color: #9b59b6;">
+      <div class="duration">长期 · 进阶方向</div>
+      <h4>能力扩展</h4>
+      <ul>
+        <li>传感器时序深度分析</li>
+        <li>桥梁图像识别</li>
+        <li>多模态融合诊断</li>
+        <li>更大的模型（1.8B/7B）</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <h2>常见问题</h2>
+
+  <div class="step-block" style="padding-top: 0; padding-bottom: 0;">
+    <div class="faq-item">
+      <div class="faq-q">0.5B 模型会不会太小了，回答质量行不行？</div>
+      <div class="faq-a">
+        在通用聊天上确实不如大模型，但在垂直领域微调后效果很好。因为它把有限的"脑容量"全部用在了你的专业领域上。
+        桥梁健康监测这种专业场景，知识范围相对固定，0.5B~1.8B 足够了。如果以后觉得不够，可以无缝升到 1.8B 甚至 7B，训练流程一样。
+      </div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">没有标注数据怎么办？能自动生成吗？</div>
+      <div class="faq-a">
+        有几种方法：1）用大模型（GPT-4、Claude 等）根据你的巡检记录和技术文档批量生成问答对，然后人工抽检；
+        2）从历史检测报告、维修记录中自动提取；3）先上线一个"空壳"AI助手，收集真实用户问题，再人工标注。
+        建议先用方法1快速起步，有真实数据后不断迭代。
+      </div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">为什么选 LoRA 而不是全量微调？</div>
+      <div class="faq-a">
+        三个原因：1）<strong>成本低</strong>——只训万分之五的参数，CPU 就能跑；
+        2）<strong>不毁原模型</strong>——LoRA 权重是独立的小文件，想用就加载，不想用就用原模型；
+        3）<strong>方便迭代</strong>——不同领域、不同桥梁可以各训一个 LoRA，按需切换。
+        全量微调只有在你有几十万条数据且算力充足时才考虑。
+      </div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">模型会不会给出错误的诊断建议？出了事故谁负责？</div>
+      <div class="faq-a">
+        这是一个必须面对的问题。建议：1）AI 定位为"辅助工具"，所有结论标注"AI生成，仅供参考，最终以工程师判断为准"；
+        2）高风险的判断（比如是否限载、是否封桥）不要让 AI 决定，只提供分析；
+        3）建立人工审核机制，重要报告需工程师签字；
+        4）持续收集 badcase，不断优化模型，降低错误率。
+      </div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">模型要多久更新一次？</div>
+      <div class="faq-a">
+        初期（前3个月）：每2~4周更新一次，因为有很多新数据和 badcase 需要消化；
+        稳定期：每1~3个月更新一次，主要是加入新的案例和场景；
+        应急更新：发现严重错误或新增重要病害类型时，随时小版本更新。
+        LoRA 的好处就是更新快——新数据来了，几十分钟就能训出一个新版本。
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>桥梁健康小模型落地全流程手册 · 基于 Qwen2.5-0.5B + LoRA 实操方案</p>
+  <p style="margin-top: 4px;">配套脚本位于 bridge-ai-train/ 目录下，可直接运行验证</p>
+</footer>
+
+</div>
+
+<script>
+// 页内平滑导航
+document.querySelectorAll('.top-nav-links a[href^="#"]').forEach(link => {
+  link.addEventListener('click', (e) => {
+    const targetId = link.getAttribute('href').slice(1);
+    const target = document.getElementById(targetId);
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+});
+</script>
+
+</body>
+</html>
