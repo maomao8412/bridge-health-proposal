@@ -1,0 +1,1084 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>小数的意义与加减法 · 错题互动精讲</title>
+<style>
+  :root{
+    --bg:#f5f8ff;
+    --card:#ffffff;
+    --primary:#4f7cf6;
+    --primary-dark:#2f54d6;
+    --accent:#ff8c42;
+    --success:#23c18c;
+    --danger:#ef4444;
+    --text:#1f2937;
+    --text-soft:#6b7280;
+    --border:#e5e7eb;
+    --shadow:0 4px 24px rgba(79,124,246,0.08);
+    --radius:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-serif;
+    background:linear-gradient(135deg,#eef3ff 0%,#f8f5ff 100%);
+    color:var(--text);
+    line-height:1.6;
+    min-height:100vh;
+  }
+  .hero{
+    background:linear-gradient(135deg,#6366f1 0%,#8b5cf6 100%);
+    color:#fff;
+    padding:48px 24px 64px;
+    text-align:center;
+  }
+  .hero h1{font-size:32px;margin-bottom:8px;font-weight:700}
+  .hero p{opacity:.9;font-size:16px}
+  .hero .tag{
+    display:inline-block;background:rgba(255,255,255,.2);
+    padding:4px 14px;border-radius:20px;font-size:13px;margin-top:12px;
+  }
+  .container{max-width:1100px;margin:-32px auto 48px;padding:0 20px}
+  
+  .nav-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+    gap:12px;margin-bottom:28px;
+  }
+  .nav-card{
+    background:var(--card);border-radius:var(--radius);
+    padding:16px;text-align:center;cursor:pointer;
+    box-shadow:var(--shadow);transition:all .25s;
+    border:2px solid transparent;
+  }
+  .nav-card:hover{transform:translateY(-3px);border-color:var(--primary)}
+  .nav-card .num{
+    width:36px;height:36px;border-radius:50%;
+    background:linear-gradient(135deg,#6366f1,#8b5cf6);
+    color:#fff;display:flex;align-items:center;justify-content:center;
+    font-weight:700;margin:0 auto 8px;font-size:16px;
+  }
+  .nav-card .title{font-size:14px;font-weight:600}
+
+  .q-card{
+    background:var(--card);border-radius:var(--radius);
+    box-shadow:var(--shadow);margin-bottom:24px;overflow:hidden;
+  }
+  .q-header{
+    background:linear-gradient(135deg,#f0f4ff,#f5efff);
+    padding:20px 24px;display:flex;align-items:flex-start;gap:14px;
+    border-bottom:1px solid var(--border);
+  }
+  .q-badge{
+    flex-shrink:0;width:48px;height:48px;border-radius:12px;
+    background:linear-gradient(135deg,#6366f1,#8b5cf6);
+    color:#fff;display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:18px;
+  }
+  .q-title{flex:1}
+  .q-title h3{font-size:18px;margin-bottom:4px}
+  .q-meta{font-size:13px;color:var(--text-soft)}
+  .q-meta .wrong{color:var(--danger);font-weight:600}
+  .q-meta .right{color:var(--success);font-weight:600}
+
+  .q-body{padding:24px}
+  .q-desc{
+    background:#f9fafb;border-left:4px solid #8b5cf6;
+    padding:14px 18px;border-radius:0 8px 8px 0;margin-bottom:20px;font-size:15px;
+  }
+  .q-desc em{font-style:normal;background:#fff3cd;padding:2px 6px;border-radius:4px}
+
+  .demo-box{
+    background:linear-gradient(135deg,#f8faff,#fff5ee);
+    border-radius:12px;padding:24px;margin-bottom:20px;
+    border:1px dashed #c7d4ff;
+  }
+  .demo-title{
+    font-size:15px;font-weight:600;color:#6d28d9;
+    margin-bottom:14px;display:flex;align-items:center;gap:8px;
+  }
+  .demo-title::before{content:"🎯";font-size:18px}
+
+  /* 小数意义 - 方格演示 */
+  .grid-demo{display:flex;gap:24px;flex-wrap:wrap;justify-content:center;align-items:flex-start}
+  .grid-figure{text-align:center}
+  .grid-figure h4{font-size:14px;margin-bottom:8px;color:var(--text-soft)}
+  .grid-canvas{width:200px;height:200px;background:#fff;border-radius:8px;border:1px solid var(--border)}
+  .grid-figure .result{margin-top:8px;font-weight:600;font-size:15px}
+
+  /* 小数性质 */
+  .prop-demo{
+    display:flex;flex-direction:column;align-items:center;gap:16px;
+  }
+  .prop-controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center}
+  .prop-num{
+    font-size:48px;font-weight:700;letter-spacing:2px;
+    background:linear-gradient(135deg,#6366f1,#8b5cf6);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    background-clip:text;
+  }
+  .prop-btn{
+    padding:10px 20px;border:2px solid var(--primary);background:#fff;
+    color:var(--primary);border-radius:8px;cursor:pointer;font-size:14px;font-weight:600;
+    transition:all .2s;
+  }
+  .prop-btn:hover{background:var(--primary);color:#fff}
+  .prop-equal{font-size:24px;color:var(--success);font-weight:700}
+
+  /* 比较大小 */
+  .compare-demo{display:flex;flex-direction:column;gap:16px;align-items:center}
+  .compare-row{display:flex;gap:16px;align-items:center;flex-wrap:wrap;justify-content:center}
+  .compare-input{
+    display:flex;flex-direction:column;align-items:center;gap:6px;
+  }
+  .compare-input label{font-size:13px;color:var(--text-soft)}
+  .compare-input input{
+    width:120px;padding:10px;font-size:20px;text-align:center;
+    border:2px solid var(--border);border-radius:8px;font-weight:600;
+    outline:none;transition:border-color .2s;
+  }
+  .compare-input input:focus{border-color:var(--primary)}
+  .compare-symbol{
+    font-size:48px;font-weight:700;min-width:80px;text-align:center;
+  }
+  .symbol-gt{color:var(--danger)}
+  .symbol-lt{color:var(--success)}
+  .symbol-eq{color:#8b5cf6}
+  .compare-explain{
+    background:#fff;padding:14px 18px;border-radius:8px;
+    border:1px solid var(--border);font-size:14px;max-width:500px;width:100%;
+  }
+  .compare-step{padding:4px 0}
+  .compare-step .key{
+    display:inline-block;background:#ede9fe;color:#6d28d9;
+    padding:2px 8px;border-radius:4px;font-weight:600;font-size:13px;
+  }
+
+  /* 单位换算 */
+  .unit-demo{display:flex;flex-direction:column;gap:16px}
+  .unit-tabs{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+  .unit-tab{
+    padding:8px 16px;border:2px solid var(--border);background:#fff;
+    border-radius:8px;cursor:pointer;font-size:14px;font-weight:500;transition:all .2s;
+  }
+  .unit-tab.active{border-color:#8b5cf6;background:#f5f3ff;color:#6d28d9}
+  .unit-converter{
+    background:#fff;border-radius:10px;padding:20px;
+    display:flex;gap:20px;align-items:center;flex-wrap:wrap;justify-content:center;
+  }
+  .unit-input-group{display:flex;flex-direction:column;gap:6px;text-align:center}
+  .unit-input-group input{
+    width:120px;padding:10px;font-size:20px;text-align:center;
+    border:2px solid #c4b5fd;border-radius:8px;font-weight:600;background:#f5f3ff;color:#6d28d9;
+    outline:none;
+  }
+  .unit-arrow{font-size:24px;color:var(--text-soft)}
+  .unit-name{font-size:13px;color:var(--text-soft)}
+  .unit-ruler{
+    display:flex;gap:2px;justify-content:center;flex-wrap:wrap;
+  }
+  .ruler-cm{
+    width:30px;height:40px;background:linear-gradient(180deg,#6366f1 0%,#6366f1 30%,#e0e7ff 30%);
+    border-radius:2px;font-size:10px;color:#fff;text-align:center;padding-top:2px;
+  }
+  .ruler-mm{
+    width:3px;height:40px;background:#c4b5fd;border-radius:1px;
+  }
+  .ruler-mm.end{background:#6366f1;height:30px;align-self:flex-start}
+
+  /* 0.1时的坑 */
+  .time-demo{
+    display:flex;flex-direction:column;align-items:center;gap:16px;
+  }
+  .clock-area{
+    width:200px;height:200px;position:relative;
+  }
+  .clock{
+    width:100%;height:100%;border-radius:50%;
+    background:linear-gradient(135deg,#fef3c7,#fde68a);
+    border:4px solid #f59e0b;position:relative;
+  }
+  .clock-center{
+    position:absolute;top:50%;left:50%;width:12px;height:12px;
+    background:#b45309;border-radius:50%;transform:translate(-50%,-50%);z-index:10;
+  }
+  .clock-hand{
+    position:absolute;bottom:50%;left:50%;width:4px;background:#b45309;
+    transform-origin:bottom center;border-radius:2px;transition:transform .8s ease;
+  }
+  .clock-min{height:70px;margin-left:-2px}
+  .clock-hour{height:45px;margin-left:-2px;background:#78350f}
+  .clock-num{
+    position:absolute;font-size:14px;font-weight:700;color:#92400e;
+  }
+  .clock-n12{top:8px;left:50%;transform:translateX(-50%)}
+  .clock-n3{right:10px;top:50%;transform:translateY(-50%)}
+  .clock-n6{bottom:8px;left:50%;transform:translateX(-50%)}
+  .clock-n9{left:10px;top:50%;transform:translateY(-50%)}
+  
+  .time-slider{width:100%;max-width:400px}
+  .time-slider input[type=range]{width:100%;accent-color:#f59e0b}
+  .time-display{
+    display:flex;gap:30px;justify-content:center;font-size:15px;
+  }
+  .time-display .t-val{
+    font-size:24px;font-weight:700;color:#d97706;
+  }
+  .time-trap{
+    background:#fee2e2;border:1px solid #fca5a5;color:#991b1b;
+    padding:14px 18px;border-radius:8px;font-size:14px;width:100%;max-width:500px;
+  }
+  .time-trap strong{color:#7f1d1d}
+
+  /* 小数加减法 */
+  .calc-demo{display:flex;flex-direction:column;gap:16px;align-items:center}
+  .calc-inputs{display:flex;gap:16px;align-items:center;flex-wrap:wrap;justify-content:center}
+  .calc-inputs input{
+    width:100px;padding:8px;font-size:18px;text-align:center;
+    border:2px solid var(--border);border-radius:8px;font-weight:600;outline:none;
+  }
+  .calc-inputs select{
+    padding:8px 12px;font-size:18px;font-weight:700;
+    border:2px solid var(--primary);border-radius:8px;background:#eef3ff;color:var(--primary-dark);
+    cursor:pointer;
+  }
+  .calc-visual{
+    background:#fff;border-radius:10px;padding:20px;
+    display:flex;gap:12px;flex-wrap:wrap;justify-content:center;max-width:500px;
+  }
+  .calc-block{
+    display:flex;flex-direction:column;align-items:center;gap:6px;
+  }
+  .calc-bar{
+    height:24px;border-radius:4px;background:linear-gradient(90deg,#6366f1,#8b5cf6);
+    transition:width .5s ease;
+  }
+  .calc-bar-2{
+    height:24px;border-radius:4px;background:linear-gradient(90deg,#ff8c42,#fbbf24);
+    transition:width .5s ease;
+  }
+  .calc-bar-result{
+    height:28px;border-radius:4px;background:linear-gradient(90deg,#23c18c,#34d399);
+    transition:width .5s ease;
+  }
+  .calc-label{font-size:12px;color:var(--text-soft)}
+  .calc-result{
+    font-size:32px;font-weight:700;
+    background:linear-gradient(135deg,#23c18c,#34d399);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    background-clip:text;
+  }
+  .calc-tip{
+    background:#ecfdf5;color:#065f46;padding:10px 14px;border-radius:8px;font-size:13px;
+    text-align:center;max-width:500px;width:100%;
+  }
+
+  .analysis{
+    background:#f0fdf4;border-left:4px solid var(--success);
+    padding:16px 18px;border-radius:0 8px 8px 0;margin-top:16px;
+  }
+  .analysis h4{color:#065f46;font-size:15px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+  .analysis h4::before{content:"💡"}
+  .analysis p{font-size:14px;color:#065f46;line-height:1.7}
+  .analysis .key{
+    display:inline-block;background:#fff;color:#065f46;
+    padding:2px 8px;border-radius:4px;font-weight:600;font-size:13px;
+    margin:2px 2px;
+  }
+
+  .footer{text-align:center;padding:24px;color:var(--text-soft);font-size:13px}
+
+  @media (max-width:640px){
+    .hero h1{font-size:24px}
+    .hero{padding:32px 16px 48px}
+    .q-body{padding:16px}
+    .nav-grid{grid-template-columns:repeat(2,1fr)}
+    .prop-num{font-size:36px}
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>🔢 小数的意义与加减法 · 错题精讲</h1>
+  <p>五年级上册 · 第一单元 · 交互式可视化讲解</p>
+  <div class="tag">拖动滑块 → 看见小数 → 真正理解</div>
+</div>
+
+<div class="container">
+
+  <div class="nav-grid">
+    <div class="nav-card" onclick="scrollToQ('q1')">
+      <div class="num">1</div>
+      <div class="title">小数的意义</div>
+    </div>
+    <div class="nav-card" onclick="scrollToQ('q2')">
+      <div class="num">2</div>
+      <div class="title">小数的性质</div>
+    </div>
+    <div class="nav-card" onclick="scrollToQ('q3')">
+      <div class="num">3</div>
+      <div class="title">小数比较大小</div>
+    </div>
+    <div class="nav-card" onclick="scrollToQ('q4')">
+      <div class="num">4</div>
+      <div class="title">单位换算</div>
+    </div>
+    <div class="nav-card" onclick="scrollToQ('q5')">
+      <div class="num">5</div>
+      <div class="title">⚠️ 0.1时 = ? 分</div>
+    </div>
+    <div class="nav-card" onclick="scrollToQ('q6')">
+      <div class="num">6</div>
+      <div class="title">小数加减法</div>
+    </div>
+  </div>
+
+  <!-- 第1题：小数的意义 -->
+  <div class="q-card" id="q1">
+    <div class="q-header">
+      <div class="q-badge">1</div>
+      <div class="q-title">
+        <h3>小数的意义：十分之几、百分之几</h3>
+        <div class="q-meta">看图填分数和小数 · 易错点：<span class="wrong">搞不清10格和100格的区别 ❌</span></div>
+      </div>
+    </div>
+    <div class="q-body">
+      <div class="q-desc">
+        一个正方形代表1。平均分成10份，涂色几份就是<em>十分之几</em>（一位小数）；
+        平均分成100份，涂色几份就是<em>百分之几</em>（两位小数）。
+      </div>
+
+      <div class="demo-box">
+        <div class="demo-title">互动：涂色格数变一变，看看小数怎么变</div>
+        <div class="grid-demo">
+          <div class="grid-figure">
+            <h4>十分之几（一位小数）</h4>
+            <svg class="grid-canvas" viewBox="0 0 200 200" id="grid10" role="img" aria-label="十分之几演示方格"><title>十分之几演示方格</title>
+              <rect x="0" y="0" width="200" height="200" fill="#fff" stroke="#cbd5e1" stroke-width="2"/>
+              <g id="grid10-bars"></g>
+              <line x1="0" y1="0" x2="0" y2="200" stroke="#cbd5e1" stroke-width="2"/>
+            </svg>
+            <div style="margin-top:8px">
+              <input type="range" min="0" max="10" value="6" id="slider10" oninput="updateGrid10()" style="width:180px;accent-color:#6366f1">
+            </div>
+            <div class="result" id="result10">6/10 = 0.6</div>
+          </div>
+
+          <div class="grid-figure">
+            <h4>百分之几（两位小数）</h4>
+            <svg class="grid-canvas" viewBox="0 0 200 200" id="grid100" role="img" aria-label="百分之几演示方格"><title>百分之几演示方格</title>
+              <rect x="0" y="0" width="200" height="200" fill="#fff" stroke="#cbd5e1" stroke-width="2"/>
+              <g id="grid100-cells"></g>
+            </svg>
+            <div style="margin-top:8px">
+              <input type="range" min="0" max="100" value="35" id="slider100" oninput="updateGrid100()" style="width:180px;accent-color:#8b5cf6">
+            </div>
+            <div class="result" id="result100">35/100 = 0.35</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="analysis">
+        <h4>小数的本质：分母是10、100、1000……的分数</h4>
+        <p>
+          <span class="key">0.1 = 1/10</span>（把1平均分成10份，取1份）
+          <span class="key">0.01 = 1/100</span>（把1平均分成100份，取1份）
+          <span class="key">0.001 = 1/1000</span>（把1平均分成1000份，取1份）
+        </p>
+        <p style="margin-top:8px">
+          <strong>一位小数</strong>表示十分之几，<strong>两位小数</strong>表示百分之几，
+          <strong>三位小数</strong>表示千分之几……
+          小数点后面有几位，就表示分母是1后面几个0。
+        </p>
+        <p style="margin-top:8px">
+          <strong>回到题目检查：</strong><br>
+          第一幅图10格涂了6格 → <span class="key">6/10 = 0.6</span> ✅<br>
+          第二幅图100格涂了35格 → <span class="key">35/100 = 0.35</span> ✅
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 第2题：小数的性质 -->
+  <div class="q-card" id="q2">
+    <div class="q-header">
+      <div class="q-badge">2</div>
+      <div class="q-title">
+        <h3>小数的性质：末尾添0或去0，大小不变</h3>
+        <div class="q-meta">0.5改写成以1/100为单位 · 你的答案：<span class="wrong">A 0.05 ❌</span> · 正确答案：<span class="right">B 0.50 ✅</span></div>
+      </div>
+    </div>
+    <div class="q-body">
+      <div class="q-desc">
+        把0.5改写成以 <em>1/100</em> 为单位的数，就是要让它变成两位小数。
+        注意：是在小数的<em>末尾</em>添0，不是在小数点后面直接加0！
+      </div>
+
+      <div class="demo-box">
+        <div class="demo-title">神奇实验：0.5 的末尾添上一个0，大小变了吗？</div>
+        <div class="prop-demo">
+          <div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap;justify-content:center">
+            <div style="text-align:center">
+              <div class="prop-num" id="prop-left">0.5</div>
+              <div style="font-size:13px;color:var(--text-soft)">一位小数</div>
+              <svg width="120" height="30" viewBox="0 0 120 30" style="margin-top:8px" role="img" aria-label="小数性质示意图上"><title>小数性质示意图上</title>
+                <rect x="0" y="5" width="60" height="20" fill="#6366f1" rx="2"/>
+                <rect x="60" y="5" width="60" height="20" fill="#e0e7ff" rx="2"/>
+              </svg>
+              <div style="font-size:12px;color:var(--text-soft);margin-top:4px">6格/10格</div>
+            </div>
+            
+            <div class="prop-equal" id="prop-eq">=</div>
+            
+            <div style="text-align:center">
+              <div class="prop-num" id="prop-right">0.50</div>
+              <div style="font-size:13px;color:var(--text-soft)">两位小数</div>
+              <svg width="120" height="30" viewBox="0 0 120 30" style="margin-top:8px" role="img" aria-label="小数性质示意图下"><title>小数性质示意图下</title>
+                <rect x="0" y="5" width="60" height="20" fill="#8b5cf6" rx="2"/>
+                <rect x="60" y="5" width="60" height="20" fill="#ede9fe" rx="2"/>
+                <line x1="6" y1="5" x2="6" y2="25" stroke="#fff" stroke-width="0.5"/>
+                <line x1="12" y1="5" x2="12" y2="25" stroke="#fff" stroke-width="0.5"/>
+                <line x1="18" y1="5" x2="18" y2="25" stroke="#fff" stroke-width="0.5"/>
+                <line x1="24" y1="5" x2="24" y2="25" stroke="#fff" stroke-width="0.5"/>
+                <line x1="30" y1="5" x2="30" y2="25" stroke="#fff" stroke-width="0.5"/>
+                <line x1="36" y1="5" x2="36" y2="25" stroke="#fff" stroke-width="0.5"/>
+                <line x1="42" y1="5" x2="42" y2="25" stroke="#fff" stroke-width="0.5"/>
+                <line x1="48" y1="5" x2="48" y2="25" stroke="#fff" stroke-width="0.5"/>
+                <line x1="54" y1="5" x2="54" y2="25" stroke="#fff" stroke-width="0.5"/>
+              </svg>
+              <div style="font-size:12px;color:var(--text-soft);margin-top:4px">50格/100格</div>
+            </div>
+          </div>
+          
+          <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:10px">
+            <button class="prop-btn" onclick="addZero()">➕ 末尾添0</button>
+            <button class="prop-btn" onclick="removeZero()">➖ 末尾去0</button>
+          </div>
+          
+          <div style="background:#f0fdf4;color:#065f46;padding:10px 16px;border-radius:8px;font-size:14px;max-width:450px;text-align:center">
+            0.5 = 0.50 = 0.500<br>
+            <strong>大小一样，只是计数单位不同！</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="analysis">
+        <h4>小数的性质（超重要！）</h4>
+        <p>
+          <strong style="font-size:16px">小数的末尾添上"0"或去掉"0"，小数的大小不变。</strong>
+        </p>
+        <p style="margin-top:8px">
+          关键词：<span class="key">末尾</span>！必须是小数的最后面，不能在中间加，也不能在小数点后面直接加。
+        </p>
+        <p style="margin-top:8px">
+          <strong>举例：</strong><br>
+          ✅ 0.5 = 0.50 = 0.500（末尾添0，大小不变）<br>
+          ✅ 3.20 = 3.2（末尾去0，大小不变）<br>
+          ❌ 0.5 ≠ 0.05（不是在末尾添的！0.5是5个0.1，0.05是5个0.01，差10倍）<br>
+          ❌ 3.02 ≠ 3.2（中间的0不能去！）
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 第3题：小数比较大小 -->
+  <div class="q-card" id="q3">
+    <div class="q-header">
+      <div class="q-badge">3</div>
+      <div class="q-title">
+        <h3>小数比较大小：位数多不一定大！</h3>
+        <div class="q-meta">0.69 ○ 0.069、0.280 ○ 0.28 · 易错点：<span class="wrong">以为位数多就大 ❌</span></div>
+      </div>
+    </div>
+    <div class="q-body">
+      <div class="q-desc">
+        比较小数大小，不是看位数多少，而是从<em>高位到低位</em>一位一位比。
+        就像比两个数谁大，先比最高位，最高位大的那个数就大。
+      </div>
+
+      <div class="demo-box">
+        <div class="demo-title">动手试试：输入两个小数，看看谁大谁小</div>
+        <div class="compare-demo">
+          <div class="compare-row">
+            <div class="compare-input">
+              <label>小数A</label>
+              <input type="number" step="0.001" value="0.69" id="cmp-a" oninput="compareDecimals()">
+            </div>
+            <div class="compare-symbol" id="cmp-symbol">></div>
+            <div class="compare-input">
+              <label>小数B</label>
+              <input type="number" step="0.001" value="0.069" id="cmp-b" oninput="compareDecimals()">
+            </div>
+          </div>
+          
+          <div class="compare-explain" id="cmp-explain">
+            <div class="compare-step">第1步：先比整数部分 — <span class="key">0 = 0</span>，相等，继续比</div>
+            <div class="compare-step">第2步：比十分位（小数点后第1位）— <span class="key">6 > 0</span>，分出胜负！</div>
+            <div class="compare-step">结论：<strong style="color:var(--danger)">0.69 > 0.069</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="analysis">
+        <h4>小数比较大小的方法</h4>
+        <p>
+          <strong>口诀：从左往右，一位一位比，谁先大谁就大！</strong>
+        </p>
+        <p style="margin-top:8px">
+          步骤：<br>
+          ① 先比<span class="key">整数部分</span>，整数部分大的数大<br>
+          ② 整数部分相同，比<span class="key">十分位</span>，十分位大的数大<br>
+          ③ 十分位也相同，比<span class="key">百分位</span>，百分位大的数大<br>
+          ④ ……直到比出大小为止
+        </p>
+        <p style="margin-top:8px">
+          <strong>常见坑：</strong><br>
+          ❌ "0.069是三位小数，0.69是两位小数，三位比两位大"——错！<br>
+          ✅ 位数多不代表数大，关键要看<strong>高位上的数字</strong>。0.69的十分位是6，0.069的十分位是0，6>0，所以0.69大。
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 第4题：单位换算 -->
+  <div class="q-card" id="q4">
+    <div class="q-header">
+      <div class="q-badge">4</div>
+      <div class="q-title">
+        <h3>单位换算：长度、质量与小数</h3>
+        <div class="q-meta">米/分米/厘米、千克/克 · 易错点：<span class="wrong">进率搞反了 ❌</span></div>
+      </div>
+    </div>
+    <div class="q-body">
+      <div class="q-desc">
+        单位换算和小数是好朋友。低级单位变高级单位，用<em>除法</em>（小数点左移）；
+        高级单位变低级单位，用<em>乘法</em>（小数点右移）。
+      </div>
+
+      <div class="demo-box">
+        <div class="demo-title">互动换算：拖动滑块看单位之间的关系</div>
+        <div class="unit-demo">
+          <div class="unit-tabs">
+            <button class="unit-tab active" onclick="switchUnit('length')">📏 长度（米/分米/厘米）</button>
+            <button class="unit-tab" onclick="switchUnit('weight')">⚖️ 质量（千克/克）</button>
+          </div>
+          
+          <div id="unit-length">
+            <div class="unit-converter">
+              <div class="unit-input-group">
+                <input type="number" step="0.01" value="1.2" id="unit-m" oninput="convertLength('m')">
+                <div class="unit-name">米 (m)</div>
+              </div>
+              <div class="unit-arrow">→</div>
+              <div class="unit-input-group">
+                <input type="number" step="0.1" value="12" id="unit-dm" oninput="convertLength('dm')">
+                <div class="unit-name">分米 (dm)</div>
+              </div>
+              <div class="unit-arrow">→</div>
+              <div class="unit-input-group">
+                <input type="number" value="120" id="unit-cm" oninput="convertLength('cm')">
+                <div class="unit-name">厘米 (cm)</div>
+              </div>
+            </div>
+            <div style="text-align:center;margin-top:12px">
+              <div style="font-size:13px;color:var(--text-soft);margin-bottom:8px">1米 = 10分米 = 100厘米</div>
+              <div class="unit-ruler" id="unit-ruler"></div>
+            </div>
+          </div>
+          
+          <div id="unit-weight" style="display:none">
+            <div class="unit-converter">
+              <div class="unit-input-group">
+                <input type="number" step="0.001" value="0.15" id="unit-kg" oninput="convertWeight('kg')">
+                <div class="unit-name">千克 (kg)</div>
+              </div>
+              <div class="unit-arrow">=</div>
+              <div class="unit-input-group">
+                <input type="number" value="150" id="unit-g" oninput="convertWeight('g')">
+                <div class="unit-name">克 (g)</div>
+              </div>
+            </div>
+            <div style="text-align:center;margin-top:12px;font-size:13px;color:var(--text-soft)">
+              1千克 = 1000克 &nbsp;&nbsp; 1吨 = 1000千克
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="analysis">
+        <h4>单位换算小窍门</h4>
+        <p>
+          <strong>记住三句话：</strong><br>
+          1. 大单位 → 小单位：<span class="key">×进率</span>（数变大，小数点右移）<br>
+          2. 小单位 → 大单位：<span class="key">÷进率</span>（数变小，小数点左移）<br>
+          3. 进率是多少？差几个0，小数点就移几位
+        </p>
+        <p style="margin-top:8px">
+          <strong>常见进率：</strong><br>
+          长度：1米=10分米=100厘米=1000毫米（相邻进率10）<br>
+          质量：1千克=1000克，1吨=1000千克（进率1000）<br>
+          货币：1元=10角=100分
+        </p>
+        <p style="margin-top:8px">
+          <strong>练习一下：</strong><br>
+          5厘米 = 0.05米（厘米→米，小单位变大单位，÷100，小数点左移2位）<br>
+          150千克 = 0.15吨（千克→吨，÷1000，小数点左移3位）
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 第5题：时间大坑 -->
+  <div class="q-card" id="q5">
+    <div class="q-header">
+      <div class="q-badge">⚠️</div>
+      <div class="q-title">
+        <h3>超级大坑：0.1时 = ？分</h3>
+        <div class="q-meta">最容易错的题！ · 错误答案：<span class="wrong">0.1时 = 1分 ❌</span> · 正确答案：<span class="right">0.1时 = 6分 ✅</span></div>
+      </div>
+    </div>
+    <div class="q-body">
+      <div class="q-desc">
+        很多同学想当然地以为：0.1米 = 1分米，0.1元 = 1角，那0.1时 = 1分呗？
+        <strong style="color:var(--danger)">大错特错！</strong>
+        时间的进率是<strong>60</strong>，不是10！
+      </div>
+
+      <div class="demo-box">
+        <div class="demo-title">看着钟表转一转：0.1小时到底是多少分钟？</div>
+        <div class="time-demo">
+          <div class="clock-area">
+            <div class="clock">
+              <div class="clock-num clock-n12">12</div>
+              <div class="clock-num clock-n3">3</div>
+              <div class="clock-num clock-n6">6</div>
+              <div class="clock-num clock-n9">9</div>
+              <div class="clock-hand clock-hour" id="hour-hand"></div>
+              <div class="clock-hand clock-min" id="min-hand"></div>
+              <div class="clock-center"></div>
+            </div>
+          </div>
+          
+          <div class="time-slider">
+            <input type="range" min="0" max="60" value="6" id="time-slider" oninput="updateClock()">
+          </div>
+          
+          <div class="time-display">
+            <div>
+              <div style="font-size:12px;color:var(--text-soft)">经过的时间</div>
+              <div class="t-val" id="time-hour">0.1 时</div>
+            </div>
+            <div>=</div>
+            <div>
+              <div style="font-size:12px;color:var(--text-soft)">等于</div>
+              <div class="t-val" id="time-min">6 分</div>
+            </div>
+          </div>
+          
+          <div class="time-trap">
+            ⚠️ <strong>为什么0.1时不等于1分？</strong><br>
+            因为<strong>1时 = 60分，不是10分！</strong><br>
+            0.1时 = 1/10小时 = 把60分钟平均分成10份，取1份 = 60 ÷ 10 = <strong>6分钟</strong>！
+          </div>
+        </div>
+      </div>
+
+      <div class="analysis">
+        <h4>时间单位换算必须记牢</h4>
+        <p>
+          <span class="key">1时 = 60分</span>
+          <span class="key">1分 = 60秒</span>
+          <span class="key">进率是60！不是10！</span>
+        </p>
+        <p style="margin-top:8px">
+          <strong>怎么算？用乘法！</strong><br>
+          0.1时 = 0.1 × 60 = 6分<br>
+          0.5时 = 0.5 × 60 = 30分（半小时）<br>
+          0.25时 = 0.25 × 60 = 15分（一刻钟）<br>
+          1.5时 = 1时 + 0.5时 = 60分 + 30分 = 90分
+        </p>
+        <p style="margin-top:8px">
+          <strong>避坑口诀：</strong>
+          时间最特别，进率是60。看到"时→分"，乘60别犹豫！
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 第6题：小数加减法 -->
+  <div class="q-card" id="q6">
+    <div class="q-header">
+      <div class="q-badge">6</div>
+      <div class="q-title">
+        <h3>小数加减法：小数点对齐！</h3>
+        <div class="q-meta">5.26 - 0.83、23.93 + 4.07 · 易错点：<span class="wrong">末尾对齐 ❌</span></div>
+      </div>
+    </div>
+    <div class="q-body">
+      <div class="q-desc">
+        小数加减法的关键：<em>小数点对齐</em>（也就是相同数位对齐）。
+        不是末尾对齐哦！整数加减法是末尾对齐，小数加减是小数点对齐——因为小数点对齐了，相同数位就对齐了。
+      </div>
+
+      <div class="demo-box">
+        <div class="demo-title">动手算一算：输入两个数，选择加或减</div>
+        <div class="calc-demo">
+          <div class="calc-inputs">
+            <input type="number" step="0.01" value="5.26" id="calc-a" oninput="calcIt()">
+            <select id="calc-op" onchange="calcIt()">
+              <option value="+">+</option>
+              <option value="-">−</option>
+            </select>
+            <input type="number" step="0.01" value="0.83" id="calc-b" oninput="calcIt()">
+            <span style="font-size:24px;font-weight:700">=</span>
+            <span class="calc-result" id="calc-result">4.43</span>
+          </div>
+          
+          <div class="calc-visual">
+            <div class="calc-block" style="width:100%">
+              <div class="calc-label">A（<span id="calc-label-a">5.26</span>）</div>
+              <div style="width:100%;background:#eef3ff;border-radius:4px;height:24px">
+                <div class="calc-bar" id="calc-bar-a" style="width:100%"></div>
+              </div>
+            </div>
+            <div class="calc-block" style="width:100%">
+              <div class="calc-label">B（<span id="calc-label-b">0.83</span>）</div>
+              <div style="width:100%;background:#fff7ed;border-radius:4px;height:24px">
+                <div class="calc-bar-2" id="calc-bar-b" style="width:15.8%"></div>
+              </div>
+            </div>
+            <div class="calc-block" style="width:100%">
+              <div class="calc-label">结果（<span id="calc-label-r">4.43</span>）</div>
+              <div style="width:100%;background:#ecfdf5;border-radius:4px;height:28px">
+                <div class="calc-bar-result" id="calc-bar-r" style="width:84.2%"></div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="calc-tip">
+            ✅ <strong>对齐小数点</strong>，从最低位开始算，满十进一，不够借一。
+            得到的结果也要对齐小数点哦！
+          </div>
+        </div>
+      </div>
+
+      <div class="analysis">
+        <h4>小数加减法三字诀</h4>
+        <p>
+          <span class="key">一对齐</span>：小数点对齐（相同数位对齐）<br>
+          <span class="key">二计算</span>：从最低位开始，按整数加减法算<br>
+          <span class="key">三点点</span>：得数里对齐横线上的小数点，点上小数点
+        </p>
+        <p style="margin-top:8px">
+          <strong>常见错误：</strong><br>
+          ❌ 末尾对齐（像整数那样）：5.26 + 0.83，要是末尾对齐就变成 5.26 + 0.83 的数位错位了<br>
+          ✅ 小数点对齐：5.26 和 0.83 的小数点对齐，个位对个位、十分位对十分位、百分位对百分位
+        </p>
+        <p style="margin-top:8px">
+          <strong>验算方法：</strong><br>
+          加法：交换两个加数的位置再算一遍，看结果一样不<br>
+          减法：差 + 减数 = 被减数，看看对不对
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    🔢 小数单元错题精讲 · 交互式可视化学习 · 动手拖动、实时变化
+  </div>
+</div>
+
+<script>
+function scrollToQ(id){
+  document.getElementById(id).scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// 1. 小数意义：10格
+function updateGrid10(){
+  const n = parseInt(document.getElementById('slider10').value);
+  const g = document.getElementById('grid10-bars');
+  g.innerHTML = '';
+  const w = 200 / 10;
+  for(let i = 0; i < n; i++){
+    const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    rect.setAttribute('x', i * w);
+    rect.setAttribute('y', 0);
+    rect.setAttribute('width', w - 1);
+    rect.setAttribute('height', 200);
+    rect.setAttribute('fill', '#6366f1');
+    g.appendChild(rect);
+  }
+  // 分隔线
+  for(let i = 1; i < 10; i++){
+    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1', i * w);
+    line.setAttribute('y1', 0);
+    line.setAttribute('x2', i * w);
+    line.setAttribute('y2', 200);
+    line.setAttribute('stroke', '#fff');
+    line.setAttribute('stroke-width', '1');
+    g.appendChild(line);
+  }
+  document.getElementById('result10').textContent = `${n}/10 = ${n/10}`;
+}
+
+// 100格
+function updateGrid100(){
+  const n = parseInt(document.getElementById('slider100').value);
+  const g = document.getElementById('grid100-cells');
+  g.innerHTML = '';
+  const cols = 10, rows = 10;
+  const w = 200 / cols, h = 200 / rows;
+  // 先画网格线
+  for(let i = 1; i < cols; i++){
+    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1', i * w);
+    line.setAttribute('y1', 0);
+    line.setAttribute('x2', i * w);
+    line.setAttribute('y2', 200);
+    line.setAttribute('stroke', '#e2e8f0');
+    line.setAttribute('stroke-width', '0.5');
+    g.appendChild(line);
+  }
+  for(let j = 1; j < rows; j++){
+    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1', 0);
+    line.setAttribute('y1', j * h);
+    line.setAttribute('x2', 200);
+    line.setAttribute('y2', j * h);
+    line.setAttribute('stroke', '#e2e8f0');
+    line.setAttribute('stroke-width', '0.5');
+    g.appendChild(line);
+  }
+  // 填充
+  for(let i = 0; i < n; i++){
+    const row = Math.floor(i / cols);
+    const col = i % cols;
+    const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    rect.setAttribute('x', col * w);
+    rect.setAttribute('y', row * h);
+    rect.setAttribute('width', w);
+    rect.setAttribute('height', h);
+    rect.setAttribute('fill', '#8b5cf6');
+    g.appendChild(rect);
+  }
+  document.getElementById('result100').textContent = `${n}/100 = ${(n/100).toFixed(2)}`;
+}
+
+// 2. 小数的性质
+let propZeros = 0;
+function addZero(){
+  if(propZeros < 5){
+    propZeros++;
+    updateProp();
+  }
+}
+function removeZero(){
+  if(propZeros > 0){
+    propZeros--;
+    updateProp();
+  }
+}
+function updateProp(){
+  const left = '0.5' + '0'.repeat(propZeros);
+  const right = '0.5' + '0'.repeat(propZeros + 1);
+  if(propZeros === 0){
+    document.getElementById('prop-left').textContent = '0.5';
+  } else {
+    document.getElementById('prop-left').textContent = left;
+  }
+  document.getElementById('prop-right').textContent = right;
+}
+
+// 3. 比较大小
+function compareDecimals(){
+  let a = parseFloat(document.getElementById('cmp-a').value);
+  let b = parseFloat(document.getElementById('cmp-b').value);
+  if(isNaN(a)) a = 0;
+  if(isNaN(b)) b = 0;
+  
+  const sym = document.getElementById('cmp-symbol');
+  const exp = document.getElementById('cmp-explain');
+  
+  if(a > b){
+    sym.textContent = '>';
+    sym.className = 'compare-symbol symbol-gt';
+  } else if(a < b){
+    sym.textContent = '<';
+    sym.className = 'compare-symbol symbol-lt';
+  } else {
+    sym.textContent = '=';
+    sym.className = 'compare-symbol symbol-eq';
+  }
+  
+  // 生成步骤说明
+  const aStr = a.toFixed(Math.max(countDecimals(a), countDecimals(b)));
+  const bStr = b.toFixed(Math.max(countDecimals(a), countDecimals(b)));
+  const aInt = Math.floor(a);
+  const bInt = Math.floor(b);
+  
+  let steps = '';
+  if(aInt !== bInt){
+    steps = `<div class="compare-step">第1步：比整数部分 — <span class="key">${aInt} ${aInt > bInt ? '>' : '<'} ${bInt}</span></div>
+    <div class="compare-step">结论：<strong style="color:${a>b?'var(--danger)':'var(--success)'}">${a} ${a>b?'>':'<'} ${b}</strong></div>`;
+  } else {
+    let step = 1;
+    let compared = `整数部分 ${aInt} = ${bInt}`;
+    const aDec = (a - aInt).toFixed(10);
+    const bDec = (b - bInt).toFixed(10);
+    const maxDec = Math.max(countDecimals(a), countDecimals(b));
+    let found = false;
+    
+    for(let i = 1; i <= maxDec + 1 && !found; i++){
+      const div = Math.pow(10, i);
+      const ad = Math.floor((a * div) % 10);
+      const bd = Math.floor((b * div) % 10);
+      const place = ['十分位','百分位','千分位','万分位'][i-1] || `第${i}位`;
+      if(ad !== bd){
+        steps += `<div class="compare-step">第${step}步：整数部分相同，比${place} — <span class="key">${ad} ${ad>bd?'>':'<'} ${bd}</span>，分出胜负！</div>`;
+        found = true;
+      } else {
+        steps += `<div class="compare-step">第${step}步：${compared}，继续比${place} — <span class="key">${ad} = ${bd}</span></div>`;
+      }
+      step++;
+    }
+    
+    if(!found){
+      steps = `<div class="compare-step">每一位都相同</div>`;
+    }
+    
+    const result = a > b ? '>' : (a < b ? '<' : '=');
+    const color = a > b ? 'var(--danger)' : (a < b ? 'var(--success)' : '#8b5cf6');
+    steps += `<div class="compare-step">结论：<strong style="color:${color}">${a} ${result} ${b}</strong></div>`;
+  }
+  
+  exp.innerHTML = steps;
+}
+
+function countDecimals(num){
+  if(Math.floor(num) === num) return 0;
+  const str = num.toString();
+  const dec = str.split('.')[1];
+  return dec ? dec.length : 0;
+}
+
+// 4. 单位换算
+let currentUnit = 'length';
+function switchUnit(type){
+  currentUnit = type;
+  document.querySelectorAll('.unit-tab').forEach(t=>t.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('unit-length').style.display = type === 'length' ? '' : 'none';
+  document.getElementById('unit-weight').style.display = type === 'weight' ? '' : 'none';
+}
+
+function convertLength(from){
+  let m, dm, cm;
+  if(from === 'm'){
+    m = parseFloat(document.getElementById('unit-m').value) || 0;
+    dm = m * 10;
+    cm = m * 100;
+    document.getElementById('unit-dm').value = Math.round(dm * 100) / 100;
+    document.getElementById('unit-cm').value = Math.round(cm * 100) / 100;
+  } else if(from === 'dm'){
+    dm = parseFloat(document.getElementById('unit-dm').value) || 0;
+    m = dm / 10;
+    cm = dm * 10;
+    document.getElementById('unit-m').value = Math.round(m * 1000) / 1000;
+    document.getElementById('unit-cm').value = Math.round(cm * 100) / 100;
+  } else {
+    cm = parseFloat(document.getElementById('unit-cm').value) || 0;
+    m = cm / 100;
+    dm = cm / 10;
+    document.getElementById('unit-m').value = Math.round(m * 1000) / 1000;
+    document.getElementById('unit-dm').value = Math.round(dm * 100) / 100;
+  }
+  drawRuler(m);
+}
+
+function drawRuler(meters){
+  const ruler = document.getElementById('unit-ruler');
+  const cms = Math.min(meters * 100, 30);
+  let html = '';
+  for(let i = 0; i < cms; i++){
+    if(i % 10 === 0){
+      html += `<div class="ruler-cm" title="${i/100}米">${i===0?'0':(i%10===0?i+'':'')}</div>`;
+    } else {
+      html += `<div class="ruler-mm"></div>`;
+    }
+  }
+  ruler.innerHTML = html;
+}
+
+function convertWeight(from){
+  let kg, g;
+  if(from === 'kg'){
+    kg = parseFloat(document.getElementById('unit-kg').value) || 0;
+    g = kg * 1000;
+    document.getElementById('unit-g').value = Math.round(g * 100) / 100;
+  } else {
+    g = parseFloat(document.getElementById('unit-g').value) || 0;
+    kg = g / 1000;
+    document.getElementById('unit-kg').value = Math.round(kg * 10000) / 10000;
+  }
+}
+
+// 5. 钟表
+function updateClock(){
+  const mins = parseInt(document.getElementById('time-slider').value);
+  const hours = mins / 60;
+  
+  document.getElementById('time-min').textContent = mins + ' 分';
+  document.getElementById('time-hour').textContent = hours.toFixed(2) + ' 时';
+  
+  // 分针角度：每分钟6度
+  const minAngle = mins * 6;
+  // 时针角度：每小时30度
+  const hourAngle = hours * 30;
+  
+  document.getElementById('min-hand').style.transform = `rotate(${minAngle}deg)`;
+  document.getElementById('hour-hand').style.transform = `rotate(${hourAngle}deg)`;
+}
+
+// 6. 小数加减法
+function calcIt(){
+  const a = parseFloat(document.getElementById('calc-a').value) || 0;
+  const b = parseFloat(document.getElementById('calc-b').value) || 0;
+  const op = document.getElementById('calc-op').value;
+  
+  let result;
+  if(op === '+'){
+    result = a + b;
+  } else {
+    result = a - b;
+  }
+  
+  // 修正浮点误差
+  result = Math.round(result * 10000) / 10000;
+  
+  document.getElementById('calc-result').textContent = result;
+  document.getElementById('calc-label-a').textContent = a;
+  document.getElementById('calc-label-b').textContent = b;
+  document.getElementById('calc-label-r').textContent = result;
+  
+  // 可视化条：以较大值为基准
+  const maxVal = Math.max(a, b, Math.abs(result));
+  const scale = maxVal > 0 ? 100 / maxVal : 100;
+  
+  document.getElementById('calc-bar-a').style.width = Math.abs(a) * scale + '%';
+  document.getElementById('calc-bar-b').style.width = Math.abs(b) * scale + '%';
+  document.getElementById('calc-bar-r').style.width = Math.abs(result) * scale + '%';
+}
+
+// 初始化
+updateGrid10();
+updateGrid100();
+compareDecimals();
+convertLength('m');
+updateClock();
+calcIt();
+</script>
+
+</body>
+</html>
