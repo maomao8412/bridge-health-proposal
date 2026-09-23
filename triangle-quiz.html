@@ -1,0 +1,1123 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>三角形单元错题精讲 · 交互式可视化</title>
+<style>
+  :root{
+    --bg:#f5f8ff;
+    --card:#ffffff;
+    --primary:#4f7cf6;
+    --primary-dark:#2f54d6;
+    --accent:#ff8c42;
+    --success:#23c18c;
+    --danger:#ef4444;
+    --text:#1f2937;
+    --text-soft:#6b7280;
+    --border:#e5e7eb;
+    --shadow:0 4px 24px rgba(79,124,246,0.08);
+    --radius:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-serif;
+    background:linear-gradient(135deg,#eef3ff 0%,#f8f5ff 100%);
+    color:var(--text);
+    line-height:1.6;
+    min-height:100vh;
+  }
+  .hero{
+    background:linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%);
+    color:#fff;
+    padding:48px 24px 64px;
+    text-align:center;
+  }
+  .hero h1{font-size:32px;margin-bottom:8px;font-weight:700}
+  .hero p{opacity:.9;font-size:16px}
+  .hero .tag{
+    display:inline-block;background:rgba(255,255,255,.2);
+    padding:4px 14px;border-radius:20px;font-size:13px;margin-top:12px;
+  }
+  .container{max-width:1100px;margin:-32px auto 48px;padding:0 20px}
+  
+  /* 导航 */
+  .nav-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+    gap:12px;margin-bottom:28px;
+  }
+  .nav-card{
+    background:var(--card);border-radius:var(--radius);
+    padding:16px;text-align:center;cursor:pointer;
+    box-shadow:var(--shadow);transition:all .25s;
+    border:2px solid transparent;
+  }
+  .nav-card:hover{transform:translateY(-3px);border-color:var(--primary)}
+  .nav-card .num{
+    width:36px;height:36px;border-radius:50%;
+    background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+    color:#fff;display:flex;align-items:center;justify-content:center;
+    font-weight:700;margin:0 auto 8px;font-size:16px;
+  }
+  .nav-card .title{font-size:14px;font-weight:600}
+
+  /* 题目卡片 */
+  .q-card{
+    background:var(--card);border-radius:var(--radius);
+    box-shadow:var(--shadow);margin-bottom:24px;overflow:hidden;
+  }
+  .q-header{
+    background:linear-gradient(135deg,#f0f4ff,#f5efff);
+    padding:20px 24px;display:flex;align-items:flex-start;gap:14px;
+    border-bottom:1px solid var(--border);
+  }
+  .q-badge{
+    flex-shrink:0;width:48px;height:48px;border-radius:12px;
+    background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+    color:#fff;display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:18px;
+  }
+  .q-title{flex:1}
+  .q-title h3{font-size:18px;margin-bottom:4px}
+  .q-meta{font-size:13px;color:var(--text-soft)}
+  .q-meta .wrong{color:var(--danger);font-weight:600}
+  .q-meta .right{color:var(--success);font-weight:600}
+
+  .q-body{padding:24px}
+  .q-desc{
+    background:#f9fafb;border-left:4px solid var(--primary);
+    padding:14px 18px;border-radius:0 8px 8px 0;margin-bottom:20px;font-size:15px;
+  }
+  .q-desc em{font-style:normal;background:#fff3cd;padding:2px 6px;border-radius:4px}
+
+  /* 互动演示区 */
+  .demo-box{
+    background:linear-gradient(135deg,#f8faff,#fff5ee);
+    border-radius:12px;padding:24px;margin-bottom:20px;
+    border:1px dashed #c7d4ff;
+  }
+  .demo-title{
+    font-size:15px;font-weight:600;color:var(--primary-dark);
+    margin-bottom:14px;display:flex;align-items:center;gap:8px;
+  }
+  .demo-title::before{content:"🎯";font-size:18px}
+
+  /* 三边关系互动 */
+  .stick-demo{display:flex;flex-direction:column;gap:16px}
+  .stick-controls{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+    gap:12px;
+  }
+  .stick-control label{
+    display:block;font-size:13px;color:var(--text-soft);margin-bottom:6px;
+  }
+  .stick-control input[type=range]{width:100%;accent-color:var(--primary)}
+  .stick-control .val{font-weight:700;color:var(--primary);font-size:14px}
+
+  .sticks-visual{
+    height:160px;position:relative;background:#fff;
+    border-radius:10px;display:flex;align-items:center;justify-content:center;
+    overflow:hidden;
+  }
+  .stick-v{
+    position:absolute;transform-origin:left center;
+    border-radius:4px;transition:all .4s ease;
+  }
+  .stick-a{background:linear-gradient(90deg,#4f7cf6,#7ba0ff)}
+  .stick-b{background:linear-gradient(90deg,#ff8c42,#ffb27a)}
+  .stick-c{background:linear-gradient(90deg,#23c18c,#5fd8ac)}
+  .stick-label{
+    position:absolute;color:#fff;font-size:12px;font-weight:600;
+    top:50%;transform:translateY(-50%);left:8px;
+  }
+
+  .result-box{
+    text-align:center;padding:12px;border-radius:8px;
+    font-weight:600;font-size:15px;
+  }
+  .result-box.can{background:#d1fae5;color:#065f46}
+  .result-box.cant{background:#fee2e2;color:#991b1b}
+
+  /* 三角形分类演示 */
+  .tri-interactive{
+    display:flex;flex-direction:column;align-items:center;gap:14px;
+  }
+  .tri-canvas{
+    width:100%;max-width:400px;height:240px;
+    background:#fff;border-radius:10px;position:relative;
+    border:1px solid var(--border);
+  }
+  .tri-svg{width:100%;height:100%}
+  .angle-sliders{
+    display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;width:100%;max-width:400px;
+  }
+  .angle-slider label{
+    font-size:12px;color:var(--text-soft);display:block;margin-bottom:4px;
+  }
+  .angle-slider input{width:100%;accent-color:var(--primary)}
+  .angle-tag{
+    text-align:center;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600;
+    margin-top:10px;display:inline-block;
+  }
+  .angle-acute{background:#dbeafe;color:#1e40af}
+  .angle-right{background:#fef3c7;color:#92400e}
+  .angle-obtuse{background:#fee2e2;color:#991b1b}
+  .side-tag{
+    text-align:center;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600;
+    margin-top:4px;display:inline-block;
+  }
+  .side-scalene{background:#e0e7ff;color:#3730a3}
+  .side-isosceles{background:#fce7f3;color:#9d174d}
+  .side-equilateral{background:#d1fae5;color:#065f46}
+
+  /* 内角和演示 */
+  .angle-sum-demo{
+    display:flex;flex-direction:column;align-items:center;gap:16px;
+  }
+  .sum-canvas{
+    width:100%;max-width:480px;height:280px;
+    background:#fff;border-radius:10px;position:relative;
+    border:1px solid var(--border);
+  }
+  .sum-btn-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+  .demo-btn{
+    padding:8px 18px;border:none;border-radius:8px;
+    background:var(--primary);color:#fff;font-size:14px;cursor:pointer;
+    transition:all .2s;font-weight:500;
+  }
+  .demo-btn:hover{background:var(--primary-dark);transform:translateY(-1px)}
+  .demo-btn.secondary{background:#f3f4f6;color:var(--text)}
+  .demo-btn.secondary:hover{background:#e5e7eb}
+  .sum-result{
+    font-size:15px;font-weight:600;color:var(--primary-dark);
+  }
+
+  /* 图形分割演示 */
+  .split-demo{
+    display:flex;flex-wrap:wrap;gap:20px;justify-content:center;align-items:flex-start;
+  }
+  .split-figure{
+    width:200px;text-align:center;
+  }
+  .split-figure h4{font-size:14px;margin-bottom:8px;color:var(--text-soft)}
+  .split-svg{width:100%;height:150px;background:#fff;border-radius:8px;border:1px solid var(--border)}
+  .split-figure .verdict{
+    margin-top:6px;font-size:13px;font-weight:600;
+  }
+  .verdict.ok{color:var(--success)}
+  .verdict.no{color:var(--danger)}
+
+  /* 等腰三角形演示 */
+  .iso-demo{
+    display:flex;flex-direction:column;align-items:center;gap:16px;
+  }
+  .iso-toggle{display:flex;gap:10px}
+  .iso-toggle button{
+    padding:8px 20px;border:2px solid var(--border);background:#fff;
+    border-radius:8px;cursor:pointer;font-size:14px;font-weight:500;
+    transition:all .2s;
+  }
+  .iso-toggle button.active{
+    border-color:var(--primary);background:#eef3ff;color:var(--primary-dark);
+  }
+  .iso-svg{width:100%;max-width:300px;height:240px;background:#fff;border-radius:10px;border:1px solid var(--border)}
+  .iso-calc{
+    background:#fff;border-radius:8px;padding:14px;font-size:14px;
+    border:1px solid var(--border);width:100%;max-width:360px;
+  }
+  .iso-calc .line{display:flex;justify-content:space-between;padding:4px 0}
+  .iso-calc .line.total{border-top:1px solid var(--border);margin-top:6px;padding-top:8px;font-weight:700;color:var(--primary-dark)}
+  .iso-warn{
+    background:#fef3c7;color:#92400e;padding:10px 14px;border-radius:8px;font-size:13px;
+  }
+
+  /* 解析部分 */
+  .analysis{
+    background:#f0fdf4;border-left:4px solid var(--success);
+    padding:16px 18px;border-radius:0 8px 8px 0;margin-top:16px;
+  }
+  .analysis h4{color:#065f46;font-size:15px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+  .analysis h4::before{content:"💡"}
+  .analysis p{font-size:14px;color:#065f46;line-height:1.7}
+  .analysis .key{
+    display:inline-block;background:#fff;color:#065f46;
+    padding:2px 8px;border-radius:4px;font-weight:600;font-size:13px;
+    margin:2px 2px;
+  }
+
+  /* 底部 */
+  .footer{
+    text-align:center;padding:24px;color:var(--text-soft);font-size:13px;
+  }
+
+  @media (max-width:640px){
+    .hero h1{font-size:24px}
+    .hero{padding:32px 16px 48px}
+    .q-body{padding:16px}
+    .nav-grid{grid-template-columns:repeat(2,1fr)}
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>🔺 三角形单元错题精讲</h1>
+  <p>五年级上册 · 第二单元 · 交互式可视化讲解</p>
+  <div class="tag">动手拖动 → 看见原理 → 真正理解</div>
+</div>
+
+<div class="container">
+
+  <!-- 导航 -->
+  <div class="nav-grid">
+    <div class="nav-card" onclick="scrollToQ('q1')">
+      <div class="num">1</div>
+      <div class="title">三角形稳定性</div>
+    </div>
+    <div class="nav-card" onclick="scrollToQ('q2')">
+      <div class="num">2</div>
+      <div class="title">三边关系</div>
+    </div>
+    <div class="nav-card" onclick="scrollToQ('q3')">
+      <div class="num">3</div>
+      <div class="title">等腰三角形分类</div>
+    </div>
+    <div class="nav-card" onclick="scrollToQ('q4')">
+      <div class="num">4</div>
+      <div class="title">内角和 & 角度计算</div>
+    </div>
+    <div class="nav-card" onclick="scrollToQ('q5')">
+      <div class="num">5</div>
+      <div class="title">图形分割</div>
+    </div>
+    <div class="nav-card" onclick="scrollToQ('q6')">
+      <div class="num">6</div>
+      <div class="title">七巧板 & 多边形内角</div>
+    </div>
+  </div>
+
+  <!-- 第1题：稳定性 -->
+  <div class="q-card" id="q1">
+    <div class="q-header">
+      <div class="q-badge">1</div>
+      <div class="q-title">
+        <h3>三角形的稳定性</h3>
+        <div class="q-meta">中国空间站太阳能帆板展开支架 · 你的答案：<span class="wrong">D 对称性 ❌</span> · 正确答案：<span class="right">B 稳定性 ✅</span></div>
+      </div>
+    </div>
+    <div class="q-body">
+      <div class="q-desc">
+        中国空间站的太阳能帆板展开支架采用了大量三角形结构，这是因为三角形具有 <em>稳定性</em>。
+      </div>
+
+      <div class="demo-box">
+        <div class="demo-title">互动演示：三角形为什么"稳"？</div>
+        <div style="display:flex;gap:24px;flex-wrap:wrap;justify-content:center">
+          <div style="text-align:center">
+            <svg width="160" height="160" viewBox="0 0 160 160" role="img" aria-label="三角形稳定性演示">
+              <title>三角形稳定性演示</title>
+              <polygon points="80,20 140,130 20,130" fill="none" stroke="#4f7cf6" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" id="tri-shape"/>
+              <circle cx="80" cy="20" r="5" fill="#2f54d6"/>
+              <circle cx="140" cy="130" r="5" fill="#2f54d6"/>
+              <circle cx="20" cy="130" r="5" fill="#2f54d6"/>
+            </svg>
+            <div style="margin-top:8px;font-weight:600;color:var(--success)">三角形：稳如泰山</div>
+            <div style="font-size:12px;color:var(--text-soft);margin-top:4px">三条边固定 → 形状固定不变</div>
+          </div>
+          <div style="text-align:center">
+            <svg width="160" height="160" viewBox="0 0 160 160" id="quad-svg" role="img" aria-label="四边形不稳定性演示"><title>四边形不稳定性演示</title>
+              <polygon points="30,30 130,30 130,130 30,130" fill="none" stroke="#ef4444" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" id="quad-shape"/>
+              <circle cx="30" cy="30" r="5" fill="#b91c1c"/>
+              <circle cx="130" cy="30" r="5" fill="#b91c1c"/>
+              <circle cx="130" cy="130" r="5" fill="#b91c1c"/>
+              <circle cx="30" cy="130" r="5" fill="#b91c1c"/>
+            </svg>
+            <div style="margin-top:8px;font-weight:600;color:var(--danger)">四边形：一碰就变形</div>
+            <div style="font-size:12px;color:var(--text-soft);margin-top:4px">四条边固定 → 形状还能变</div>
+            <button class="demo-btn" style="margin-top:10px" onclick="shakeQuad()">🔄 点我晃动</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="analysis">
+        <h4>为什么三角形具有稳定性？</h4>
+        <p>
+          三角形有一个神奇的性质：只要<span class="key">三条边的长度确定了</span>，它的<span class="key">形状就完全固定</span>了，不会变。
+          而四边形、五边形就不行——四条边长度都确定了，它还是能被压变形（变成平行四边形）。
+        </p>
+        <p style="margin-top:8px">
+          <strong>生活中的应用：</strong>
+          自行车三角架、塔吊的三角形支架、屋顶的三角形结构、篮球架的支撑……
+          凡是需要"结实、不变形"的地方，都有三角形的身影！
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 第2题：三边关系 -->
+  <div class="q-card" id="q2">
+    <div class="q-header">
+      <div class="q-badge">2</div>
+      <div class="q-title">
+        <h3>三角形三边关系</h3>
+        <div class="q-meta">6dm、6dm、12dm的三根小棒 · 你的答案：<span class="wrong">C 等腰三角形 ❌</span> · 正确答案：<span class="right">D 不能围成 ✅</span></div>
+      </div>
+    </div>
+    <div class="q-body">
+      <div class="q-desc">
+        三根小棒长度分别是 <em>6dm、6dm、12dm</em>，能围成什么三角形？
+        答案是：<strong style="color:var(--danger)">根本围不成三角形！</strong>
+      </div>
+
+      <div class="demo-box">
+        <div class="demo-title">动手试试：拖动滑块调整边长，看看能不能围成三角形</div>
+        <div class="stick-demo">
+          <div class="stick-controls">
+            <div class="stick-control">
+              <label>边a（蓝）：<span class="val" id="val-a">6</span> dm</label>
+              <input type="range" min="1" max="15" value="6" id="stick-a" oninput="updateSticks()">
+            </div>
+            <div class="stick-control">
+              <label>边b（橙）：<span class="val" id="val-b">6</span> dm</label>
+              <input type="range" min="1" max="15" value="6" id="stick-b" oninput="updateSticks()">
+            </div>
+            <div class="stick-control">
+              <label>边c（绿）：<span class="val" id="val-c">12</span> dm</label>
+              <input type="range" min="1" max="15" value="12" id="stick-c" oninput="updateSticks()">
+            </div>
+          </div>
+          
+          <div class="sticks-visual" id="sticks-box">
+            <svg width="100%" height="100%" viewBox="0 0 400 160" id="sticks-svg" role="img" aria-label="三边关系互动演示"><title>三边关系互动演示</title>
+              <line id="s-a" x1="200" y1="40" x2="260" y2="40" stroke="#4f7cf6" stroke-width="8" stroke-linecap="round"/>
+              <line id="s-b" x1="200" y1="40" x2="260" y2="40" stroke="#ff8c42" stroke-width="8" stroke-linecap="round"/>
+              <line id="s-c" x1="200" y1="100" x2="320" y2="100" stroke="#23c18c" stroke-width="8" stroke-linecap="round"/>
+              <text id="label-a" x="210" y="35" fill="#fff" font-size="12" font-weight="bold">a=6</text>
+              <text id="label-b" x="210" y="55" fill="#fff" font-size="12" font-weight="bold">b=6</text>
+              <text id="label-c" x="210" y="95" fill="#fff" font-size="12" font-weight="bold">c=12</text>
+            </svg>
+          </div>
+
+          <div class="result-box" id="stick-result">⚠️ a + b = c，三条边重合，围不成三角形！</div>
+        </div>
+      </div>
+
+      <div class="analysis">
+        <h4>三角形三边关系法则</h4>
+        <p>
+          <strong>三角形任意两边之和大于第三边。</strong>
+          也就是说，必须同时满足三个条件：
+          <span class="key">a + b &gt; c</span>
+          <span class="key">a + c &gt; b</span>
+          <span class="key">b + c &gt; a</span>
+        </p>
+        <p style="margin-top:8px">
+          <strong>简便判断法：</strong>
+          其实只要看 <span class="key">最短的两条边之和 &gt; 最长边</span> 就行！
+          因为最长边加上任何一条边，肯定比另一条边长。
+        </p>
+        <p style="margin-top:8px">
+          回到题目：6 + 6 = 12，两边之和<strong style="color:var(--danger)">等于</strong>第三边，三条边会重合在一条直线上，<strong>不是三角形</strong>。
+          只有两边之和<strong style="color:var(--success)">大于</strong>第三边才行，等于不行哦！
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 第3题：等腰三角形 -->
+  <div class="q-card" id="q3">
+    <div class="q-header">
+      <div class="q-badge">3</div>
+      <div class="q-title">
+        <h3>等腰三角形的分类讨论</h3>
+        <div class="q-meta">彩带围三角形 · 你的答案：<span class="wrong">只算了一种情况 ❌</span> · 正确答案：<span class="right">两种情况都要考虑 ✅</span></div>
+      </div>
+    </div>
+    <div class="q-body">
+      <div class="q-desc">
+        用122厘米彩带围一个等腰三角形，已知一条边长36厘米。求另外两条边的长度。<br>
+        <strong style="color:var(--danger)">注意：题目没说36厘米是腰还是底，所以有两种可能！</strong>
+      </div>
+
+      <div class="demo-box">
+        <div class="demo-title">切换看看两种情况</div>
+        <div class="iso-demo">
+          <div class="iso-toggle">
+            <button id="iso-btn1" class="active" onclick="switchIso(1)">情况一：36是腰</button>
+            <button id="iso-btn2" onclick="switchIso(2)">情况二：36是底</button>
+          </div>
+          
+          <svg class="iso-svg" id="iso-svg" viewBox="0 0 300 240" role="img" aria-label="等腰三角形分类讨论示意图"><title>等腰三角形分类讨论示意图</title>
+            <polygon id="iso-poly" points="150,30 240,200 60,200" fill="rgba(79,124,246,0.15)" stroke="#4f7cf6" stroke-width="3" stroke-linejoin="round"/>
+            <text x="95" y="110" fill="#2f54d6" font-size="14" font-weight="bold" id="iso-label-l">腰：36cm</text>
+            <text x="185" y="110" fill="#2f54d6" font-size="14" font-weight="bold" id="iso-label-r">腰：36cm</text>
+            <text x="125" y="220" fill="#ff8c42" font-size="14" font-weight="bold" id="iso-label-b">底：50cm</text>
+          </svg>
+
+          <div class="iso-calc" id="iso-calc">
+            <div class="line"><span>已知边（腰）</span><span>36 cm</span></div>
+            <div class="line"><span>另一条腰</span><span>36 cm</span></div>
+            <div class="line"><span>底边 = 122 - 36 - 36</span><span>50 cm</span></div>
+            <div class="line total"><span>验证三边关系</span><span>36+36&gt;50 ✅ 成立</span></div>
+          </div>
+
+          <div class="iso-warn" id="iso-warn" style="display:none">
+            ⚠️ 验证三边关系：120 + 36 &gt; 43 ✅ 成立。<br>
+            两种情况都成立，所以这道题有<strong>两个答案</strong>！
+          </div>
+        </div>
+      </div>
+
+      <div class="analysis">
+        <h4>解题关键：分类讨论思想</h4>
+        <p>
+          看到"等腰三角形 + 一条边"，第一反应应该是：<span class="key">这条边是腰还是底？</span>
+          两种情况都要算，算完后还要<span class="key">验证三边关系</span>是否成立。
+        </p>
+        <p style="margin-top:8px">
+          <strong>完整解题过程：</strong><br>
+          ① 如果36cm是腰：另一边也是36cm，底 = 122 - 36×2 = 50cm。验证：36+36＞50 ✅<br>
+          ② 如果36cm是底：两条腰各 = (122-36)÷2 = 43cm。验证：43+36＞43 ✅<br>
+          ③ 两种情况都成立，所以答案有两组：<strong>36cm和50cm</strong>，或者<strong>43cm和43cm</strong>
+        </p>
+        <p style="margin-top:8px">
+          <strong>避坑提醒：</strong>一定要验证！比如周长是80cm、一边是20cm的等腰三角形，
+          如果20cm是腰，那底就是40cm，但20+20=40，围不成三角形。
+          所以那种情况只有一个答案。
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 第4题：内角和 -->
+  <div class="q-card" id="q4">
+    <div class="q-header">
+      <div class="q-badge">4</div>
+      <div class="q-title">
+        <h3>三角形内角和 & 角度计算</h3>
+        <div class="q-meta">长方形折角问题 & 七巧板角度 · 你的答案有错 · 关键原理：<span class="right">三角形内角和=180° ✅</span></div>
+      </div>
+    </div>
+    <div class="q-body">
+      <div class="q-desc">
+        长方形纸折一个角，∠1=35°，求∠2。<br>
+        关键要知道：<em>三角形三个内角加起来永远等于180°</em>，就像一个固定的魔法数字！
+      </div>
+
+      <div class="demo-box">
+        <div class="demo-title">神奇实验：把三角形的三个角撕下来拼在一起</div>
+        <div class="angle-sum-demo">
+          <div class="sum-canvas">
+            <svg width="100%" height="100%" viewBox="0 0 480 280" id="sum-svg" role="img" aria-label="三角形内角和拼角演示"><title>三角形内角和拼角演示</title>
+              <!-- 三角形 -->
+              <polygon id="sum-tri" points="80,220 240,40 400,220" fill="rgba(79,124,246,0.15)" stroke="#4f7cf6" stroke-width="2"/>
+              <!-- 角1 -->
+              <path d="M80,220 L120,220 A40,40 0 0,1 87.6,181 Z" fill="#4f7cf6" opacity="0.6" id="angle1"/>
+              <text x="95" y="200" fill="#fff" font-size="12" font-weight="bold" id="ang1-text">50°</text>
+              <!-- 角2 -->
+              <path d="M240,40 L208,57.6 A40,40 0 0,1 272,57.6 Z" fill="#ff8c42" opacity="0.7" id="angle2"/>
+              <text x="228" y="68" fill="#fff" font-size="12" font-weight="bold" id="ang2-text">70°</text>
+              <!-- 角3 -->
+              <path d="M400,220 L360,220 A40,40 0 0,0 392.4,181 Z" fill="#23c18c" opacity="0.7" id="angle3"/>
+              <text x="365" y="200" fill="#fff" font-size="12" font-weight="bold" id="ang3-text">60°</text>
+              
+              <!-- 拼好的角 -->
+              <g id="puzzle-angles" style="display:none">
+                <path d="M240,240 L280,240 A40,40 0 0,1 205.8,220.7 Z" fill="#4f7cf6" opacity="0.6"/>
+                <path d="M240,240 L205.8,220.7 A40,40 0 0,1 227.6,202.5 Z" fill="#ff8c42" opacity="0.7"/>
+                <path d="M240,240 L227.6,202.5 A40,40 0 0,1 274.2,220.7 Z" fill="#23c18c" opacity="0.7"/>
+                <line x1="240" y1="240" x2="200" y2="240" stroke="#333" stroke-width="2"/>
+                <line x1="240" y1="240" x2="280" y2="240" stroke="#333" stroke-width="2"/>
+                <text x="220" y="195" fill="#1f2937" font-size="13" font-weight="bold">拼成平角=180°</text>
+              </g>
+            </svg>
+          </div>
+          
+          <div class="sum-btn-row">
+            <button class="demo-btn" onclick="playSum()">▶ 演示拼角</button>
+            <button class="demo-btn secondary" onclick="resetSum()">↺ 重置</button>
+            <button class="demo-btn secondary" onclick="changeAngles()">🎲 换一组角</button>
+          </div>
+          
+          <div class="sum-result" id="sum-result">
+            三个内角和：50° + 70° + 60° = 180°
+          </div>
+        </div>
+      </div>
+
+      <div class="analysis">
+        <h4>内角和解题三步走</h4>
+        <p>
+          <strong>第一步：牢记核心公式</strong>
+          <span class="key">三角形内角和 = 180°</span>
+          <span class="key">直角 = 90°</span>
+          <span class="key">平角 = 180°</span>
+        </p>
+        <p style="margin-top:8px">
+          <strong>第二步：找已知角</strong><br>
+          从题目里、图形里找线索：有没有直角？有没有等腰（两个底角相等）？有没有对顶角相等？
+        </p>
+        <p style="margin-top:8px">
+          <strong>第三步：180°减已知角</strong><br>
+          回到折纸题：折叠前后对应的角相等，所以被折过来的那个角也是35°。
+          原来的角是直角90°，所以∠2 = 90° - 35° × 2 = 90° - 70° = 20°。
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 第5题：图形分割 -->
+  <div class="q-card" id="q5">
+    <div class="q-header">
+      <div class="q-badge">5</div>
+      <div class="q-title">
+        <h3>三角形的图形分割</h3>
+        <div class="q-meta">"一定能分成两个钝角三角形"的判断 · 你的答案：<span class="wrong">认为可以 ❌</span> · 正确答案：<span class="right">不一定（要看哪种三角形） ✅</span></div>
+      </div>
+    </div>
+    <div class="q-body">
+      <div class="q-desc">
+        下面哪种说法是错误的？关键在这句话：<em>"③号图形可以分成两个钝角三角形"</em>。
+        是所有三角形都能这样分吗？来看看。
+      </div>
+
+      <div class="demo-box">
+        <div class="demo-title">画一条线段，把三角形分成两部分，看看能分成什么样？</div>
+        <div class="split-demo">
+          <div class="split-figure">
+            <h4>锐角三角形</h4>
+            <svg class="split-svg" viewBox="0 0 200 150" role="img" aria-label="锐角三角形分割示意图"><title>锐角三角形分割示意图</title>
+              <polygon points="100,20 180,130 20,130" fill="rgba(35,193,140,0.2)" stroke="#23c18c" stroke-width="2"/>
+              <line x1="100" y1="20" x2="100" y2="130" stroke="#ef4444" stroke-width="2" stroke-dasharray="4,3"/>
+              <text x="80" y="85" fill="#16a34a" font-size="12" font-weight="bold">锐角+锐角</text>
+            </svg>
+            <div class="verdict no">❌ 分不出两个钝角</div>
+          </div>
+
+          <div class="split-figure">
+            <h4>直角三角形</h4>
+            <svg class="split-svg" viewBox="0 0 200 150" role="img" aria-label="直角三角形分割示意图"><title>直角三角形分割示意图</title>
+              <polygon points="30,20 170,130 30,130" fill="rgba(79,124,246,0.2)" stroke="#4f7cf6" stroke-width="2"/>
+              <line x1="30" y1="20" x2="130" y2="130" stroke="#ef4444" stroke-width="2" stroke-dasharray="4,3"/>
+              <text x="70" y="80" fill="#1e40af" font-size="11" font-weight="bold">直角+锐角</text>
+            </svg>
+            <div class="verdict no">❌ 分不出两个钝角</div>
+          </div>
+
+          <div class="split-figure">
+            <h4>钝角三角形</h4>
+            <svg class="split-svg" viewBox="0 0 200 150" role="img" aria-label="钝角三角形分割示意图"><title>钝角三角形分割示意图</title>
+              <polygon points="100,20 190,130 10,130" fill="rgba(239,68,68,0.15)" stroke="#ef4444" stroke-width="2"/>
+              <!-- 从钝角顶点向对边画线 -->
+              <path d="M100,20 Q130,80 80,130" fill="none" stroke="#4f7cf6" stroke-width="2" stroke-dasharray="4,3"/>
+              <text x="60" y="75" fill="#b91c1c" font-size="11" font-weight="bold">两个都是钝角？</text>
+            </svg>
+            <div class="verdict ok" style="font-size:12px">✅ 钝角三角形可以！</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="analysis">
+        <h4>判断"一定能"要小心</h4>
+        <p>
+          题目说"一定能分成两个钝角三角形"——只要有一种三角形做不到，这句话就是错的。
+          <span class="key">锐角三角形</span>和<span class="key">直角三角形</span>都无法分出两个钝角三角形。
+        </p>
+        <p style="margin-top:8px">
+          <strong>为什么锐角三角形不行？</strong><br>
+          你在锐角三角形里画一条线，把它分成两个小三角形。
+          被切开的那个角（在底边上），两个加起来是180°（平角）。
+          如果一个是钝角（＞90°），那另一个肯定＜90°，是锐角。
+          所以最多只能分出一个钝角三角形，不可能两个都是。
+        </p>
+        <p style="margin-top:8px">
+          <strong>总结技巧：</strong>看到"一定能"三个字要特别警惕！
+          试着找一下<span class="key">反例</span>——只要找到一个不行的，"一定能"就是错的。
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 第6题：七巧板和多边形内角和 -->
+  <div class="q-card" id="q6">
+    <div class="q-header">
+      <div class="q-badge">6</div>
+      <div class="q-title">
+        <h3>七巧板 & 多边形内角和</h3>
+        <div class="q-meta">4位同学的想法 & 六边形内角和 · 你的答案有疑问 · 核心方法：<span class="right">把多边形拆成三角形 ✅</span></div>
+      </div>
+    </div>
+    <div class="q-body">
+      <div class="q-desc">
+        四边形的内角和是多少？四位同学有不同的研究方法。
+        还记得吗？我们知道三角形内角和是180°，那多边形呢？
+        <strong>关键思路：把多边形拆成三角形！</strong>
+      </div>
+
+      <div class="demo-box">
+        <div class="demo-title">变变变：把多边形拆成三角形</div>
+        <div style="display:flex;flex-wrap:wrap;gap:20px;justify-content:center">
+          <div style="text-align:center">
+            <svg width="160" height="150" viewBox="0 0 160 150" role="img" aria-label="六边形内角和示意图"><title>六边形内角和示意图</title>
+              <polygon points="80,20 140,60 140,120 80,140 20,120 20,60" fill="rgba(79,124,246,0.15)" stroke="#4f7cf6" stroke-width="2"/>
+              <text x="55" y="85" fill="#2f54d6" font-size="14" font-weight="bold">六边形</text>
+              <text x="45" y="105" fill="#6b7280" font-size="12">内角和=？</text>
+            </svg>
+            <div style="font-size:20px;margin-top:4px">→</div>
+          </div>
+          <div style="text-align:center">
+            <svg width="180" height="150" viewBox="0 0 180 150" role="img" aria-label="六边形拆分为三角形示意图"><title>六边形拆分为三角形示意图</title>
+              <polygon points="90,15 160,50 160,120 90,140 20,120 20,50" fill="rgba(79,124,246,0.15)" stroke="#4f7cf6" stroke-width="2"/>
+              <line x1="90" y1="15" x2="20" y2="50" stroke="#ff8c42" stroke-width="1.5" stroke-dasharray="3,2"/>
+              <line x1="90" y1="15" x2="20" y2="120" stroke="#ff8c42" stroke-width="1.5" stroke-dasharray="3,2"/>
+              <line x1="90" y1="15" x2="90" y2="140" stroke="#ff8c42" stroke-width="1.5" stroke-dasharray="3,2"/>
+              <line x1="90" y1="15" x2="160" y2="120" stroke="#ff8c42" stroke-width="1.5" stroke-dasharray="3,2"/>
+              <line x1="90" y1="15" x2="160" y2="50" stroke="#ff8c42" stroke-width="1.5" stroke-dasharray="3,2"/>
+              <circle cx="90" cy="15" r="4" fill="#ef4444"/>
+              <text x="78" y="35" fill="#ef4444" font-size="11" font-weight="bold">1个顶点</text>
+            </svg>
+            <div style="font-size:20px;margin-top:4px">=</div>
+          </div>
+          <div style="text-align:center">
+            <svg width="160" height="150" viewBox="0 0 160 150" role="img" aria-label="四个三角形拼合示意图"><title>四个三角形拼合示意图</title>
+              <polygon points="80,30 60,100 40,60" fill="rgba(239,68,68,0.2)" stroke="#ef4444" stroke-width="1.5"/>
+              <polygon points="80,30 40,60 40,100" fill="rgba(255,140,66,0.2)" stroke="#ff8c42" stroke-width="1.5"/>
+              <polygon points="80,30 40,100 80,120" fill="rgba(35,193,140,0.2)" stroke="#23c18c" stroke-width="1.5"/>
+              <polygon points="80,30 80,120 120,100" fill="rgba(79,124,246,0.2)" stroke="#4f7cf6" stroke-width="1.5"/>
+              <polygon points="80,30 120,100 120,60" fill="rgba(168,85,247,0.2)" stroke="#a855f7" stroke-width="1.5"/>
+              <text x="55" y="80" fill="#1f2937" font-size="12" font-weight="bold">4个三角形</text>
+            </svg>
+          </div>
+        </div>
+
+        <div style="text-align:center;margin-top:16px">
+          <div style="font-size:18px;font-weight:700;color:var(--primary-dark)">
+            六边形内角和 = 4 × 180° = 720°
+          </div>
+          <div style="font-size:13px;color:var(--text-soft);margin-top:6px">
+            （6条边 → 分成 6-2 = 4 个三角形）
+          </div>
+        </div>
+      </div>
+
+      <div class="analysis">
+        <h4>多边形内角和万能公式</h4>
+        <p>
+          <strong style="font-size:16px">n边形内角和 = (n - 2) × 180°</strong>
+        </p>
+        <p style="margin-top:8px">
+          怎么来的？从一个顶点出发，向不相邻的顶点连线，<span class="key">n边形能分成 (n-2) 个三角形</span>，
+          每个三角形内角和180°，所以总内角和就是 (n-2) × 180°。
+        </p>
+        <p style="margin-top:8px">
+          <strong>常见的：</strong><br>
+          三角形（3边）：(3-2)×180° = <span class="key">180°</span><br>
+          四边形（4边）：(4-2)×180° = <span class="key">360°</span><br>
+          五边形（5边）：(5-2)×180° = <span class="key">540°</span><br>
+          六边形（6边）：(6-2)×180° = <span class="key">720°</span>
+        </p>
+        <p style="margin-top:8px">
+          <strong>回到那道题：</strong>欧阳同学把四边形分成4个三角形，然后说 180×4 = 720°。
+          不对哦！因为从中间的点分，4个三角形的内角和会多算中间那个点的周角360°。
+          正确方法：180×4 - 360 = 360°。或者用顶点法：(4-2)×180° = 360°。
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    📐 三角形单元错题精讲 · 交互式可视化学习 · 拖动滑块、点击按钮，动手学数学
+  </div>
+</div>
+
+<script>
+// 滚动定位
+function scrollToQ(id){
+  document.getElementById(id).scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// 1. 四边形晃动
+let quadAngle = 0;
+let quadTimer = null;
+function shakeQuad(){
+  if(quadTimer) return;
+  const shape = document.getElementById('quad-shape');
+  let angle = 0;
+  let dir = 1;
+  let count = 0;
+  quadTimer = setInterval(()=>{
+    angle += dir * 1.5;
+    if(angle > 15 || angle < -15) dir = -dir;
+    const h = 100 * Math.cos(angle * Math.PI / 180);
+    const y1 = 30;
+    const y2 = 130;
+    const x1 = 30 + (100 - h) / 2;
+    const x2 = 130 - (100 - h) / 2;
+    shape.setAttribute('points', `${x1},${y1} ${x2},${y1+h} ${x2},${y2-h} ${x1},${y2}`);
+    count++;
+    if(count > 30){
+      clearInterval(quadTimer);
+      quadTimer = null;
+      shape.setAttribute('points', '30,30 130,30 130,130 30,130');
+    }
+  }, 30);
+}
+
+// 2. 三边关系演示
+function updateSticks(){
+  const a = parseInt(document.getElementById('stick-a').value);
+  const b = parseInt(document.getElementById('stick-b').value);
+  const c = parseInt(document.getElementById('stick-c').value);
+  
+  document.getElementById('val-a').textContent = a;
+  document.getElementById('val-b').textContent = b;
+  document.getElementById('val-c').textContent = c;
+  
+  // 视觉缩放：最长15dm对应180px
+  const scale = 12; // 每dm多少像素
+  const sa = a * scale;
+  const sb = b * scale;
+  const sc = c * scale;
+  
+  const resultBox = document.getElementById('stick-result');
+  const svg = document.getElementById('sticks-svg');
+  
+  // 更新标签
+  document.getElementById('label-a').textContent = `a=${a}`;
+  document.getElementById('label-b').textContent = `b=${b}`;
+  document.getElementById('label-c').textContent = `c=${c}`;
+  
+  // 判断能否组成三角形
+  const canForm = (a + b > c) && (a + c > b) && (b + c > a);
+  
+  if(canForm){
+    // 用余弦定理计算角度
+    const cosA = (b*b + c*c - a*a) / (2*b*c);
+    const cosB = (a*a + c*c - b*b) / (2*a*c);
+    const angleA = Math.acos(Math.max(-1, Math.min(1, cosA)));
+    const angleB = Math.acos(Math.max(-1, Math.min(1, cosB)));
+    
+    // 放置三角形：底边c在下方，左端为起点
+    const baseY = 120;
+    const startX = 60;
+    const p1x = startX;
+    const p1y = baseY;
+    const p2x = startX + sc;
+    const p2y = baseY;
+    const p3x = startX + sb * Math.cos(angleA);
+    const p3y = baseY - sb * Math.sin(angleA);
+    
+    const saLine = document.getElementById('s-a');
+    const sbLine = document.getElementById('s-b');
+    const scLine = document.getElementById('s-c');
+    
+    // a边：p2-p3
+    saLine.setAttribute('x1', p2x);
+    saLine.setAttribute('y1', p2y);
+    saLine.setAttribute('x2', p3x);
+    saLine.setAttribute('y2', p3y);
+    
+    // b边：p1-p3
+    sbLine.setAttribute('x1', p1x);
+    sbLine.setAttribute('y1', p1y);
+    sbLine.setAttribute('x2', p3x);
+    sbLine.setAttribute('y2', p3y);
+    
+    // c边：p1-p2
+    scLine.setAttribute('x1', p1x);
+    scLine.setAttribute('y1', p1y);
+    scLine.setAttribute('x2', p2x);
+    scLine.setAttribute('y2', p2y);
+    
+    // 移动标签
+    document.getElementById('label-a').setAttribute('x', (p2x+p3x)/2 - 10);
+    document.getElementById('label-a').setAttribute('y', (p2y+p3y)/2 - 5);
+    document.getElementById('label-b').setAttribute('x', (p1x+p3x)/2 - 10);
+    document.getElementById('label-b').setAttribute('y', (p1y+p3y)/2 - 5);
+    document.getElementById('label-c').setAttribute('x', (p1x+p2x)/2 - 10);
+    document.getElementById('label-c').setAttribute('y', baseY + 18);
+    
+    resultBox.className = 'result-box can';
+    resultBox.innerHTML = `✅ ${a}+${b}=${a+b} > ${c}（最大边），可以围成三角形！`;
+  } else {
+    // 不能组成，把三条边分开展示
+    const saLine = document.getElementById('s-a');
+    const sbLine = document.getElementById('s-b');
+    const scLine = document.getElementById('s-c');
+    
+    const baseX = 40;
+    saLine.setAttribute('x1', baseX);
+    saLine.setAttribute('y1', 30);
+    saLine.setAttribute('x2', baseX + sa);
+    saLine.setAttribute('y2', 30);
+    
+    sbLine.setAttribute('x1', baseX);
+    sbLine.setAttribute('y1', 65);
+    sbLine.setAttribute('x2', baseX + sb);
+    sbLine.setAttribute('y2', 65);
+    
+    scLine.setAttribute('x1', baseX);
+    scLine.setAttribute('y1', 100);
+    scLine.setAttribute('x2', baseX + sc);
+    scLine.setAttribute('y2', 100);
+    
+    document.getElementById('label-a').setAttribute('x', baseX + 5);
+    document.getElementById('label-a').setAttribute('y', 25);
+    document.getElementById('label-b').setAttribute('x', baseX + 5);
+    document.getElementById('label-b').setAttribute('y', 60);
+    document.getElementById('label-c').setAttribute('x', baseX + 5);
+    document.getElementById('label-c').setAttribute('y', 95);
+    
+    resultBox.className = 'result-box cant';
+    // 找出最大边
+    const max = Math.max(a, b, c);
+    const sumOther = a + b + c - max;
+    if(sumOther === max){
+      resultBox.innerHTML = `⚠️ 短边之和 ${sumOther} = 最长边 ${max}，三条边重合，围不成！`;
+    } else {
+      resultBox.innerHTML = `❌ 短边之和 ${sumOther} < 最长边 ${max}，连不起来，围不成！`;
+    }
+  }
+}
+
+// 3. 等腰三角形切换
+let currentIso = 1;
+function switchIso(n){
+  currentIso = n;
+  const btn1 = document.getElementById('iso-btn1');
+  const btn2 = document.getElementById('iso-btn2');
+  const warn = document.getElementById('iso-warn');
+  
+  if(n === 1){
+    btn1.classList.add('active');
+    btn2.classList.remove('active');
+    warn.style.display = 'none';
+    
+    // 36是腰的情况：两腰36，底50
+    const poly = document.getElementById('iso-poly');
+    // 画一个等腰三角形，底边较长
+    poly.setAttribute('points', '150,20 240,200 60,200');
+    
+    document.getElementById('iso-label-l').textContent = '腰：36cm';
+    document.getElementById('iso-label-r').textContent = '腰：36cm';
+    document.getElementById('iso-label-b').textContent = '底：50cm';
+    
+    document.getElementById('iso-calc').innerHTML = `
+      <div class="line"><span>已知边（腰）</span><span>36 cm</span></div>
+      <div class="line"><span>另一条腰</span><span>36 cm</span></div>
+      <div class="line"><span>底边 = 122 - 36 - 36</span><span>50 cm</span></div>
+      <div class="line total"><span>验证三边关系</span><span>36+36＞50 ✅</span></div>
+    `;
+  } else {
+    btn2.classList.add('active');
+    btn1.classList.remove('active');
+    warn.style.display = 'block';
+    
+    // 36是底的情况：两腰43，底36
+    const poly = document.getElementById('iso-poly');
+    poly.setAttribute('points', '150,20 210,200 90,200');
+    
+    document.getElementById('iso-label-l').textContent = '腰：43cm';
+    document.getElementById('iso-label-r').textContent = '腰：43cm';
+    document.getElementById('iso-label-b').textContent = '底：36cm';
+    
+    document.getElementById('iso-calc').innerHTML = `
+      <div class="line"><span>已知边（底）</span><span>36 cm</span></div>
+      <div class="line"><span>两条腰 = (122-36)÷2</span><span>43 cm</span></div>
+      <div class="line"><span>每条腰长</span><span>43 cm</span></div>
+      <div class="line total"><span>验证三边关系</span><span>43+36＞43 ✅</span></div>
+    `;
+  }
+}
+
+// 4. 内角和拼角动画
+let sumPlaying = false;
+let angleSet = 0;
+const angleSets = [
+  {a:50, b:70, c:60},
+  {a:30, b:60, c:90},
+  {a:120, b:30, c:30},
+  {a:45, b:45, c:90},
+  {a:80, b:50, c:50}
+];
+
+function updateAngles(){
+  const set = angleSets[angleSet];
+  document.getElementById('ang1-text').textContent = set.a + '°';
+  document.getElementById('ang2-text').textContent = set.b + '°';
+  document.getElementById('ang3-text').textContent = set.c + '°';
+  document.getElementById('sum-result').textContent = `三个内角和：${set.a}° + ${set.b}° + ${set.c}° = ${set.a+set.b+set.c}°`;
+  
+  // 根据角度重新画三角形
+  drawTriangle(set.a, set.b, set.c);
+}
+
+function drawTriangle(a, b, c){
+  // 底边固定长度160，在底部
+  const baseLen = 280;
+  const baseY = 220;
+  const x1 = 100;
+  const x2 = x1 + baseLen;
+  
+  // 用正弦定理求顶点
+  const sinA = Math.sin(a * Math.PI / 180);
+  const sinB = Math.sin(b * Math.PI / 180);
+  const sinC = Math.sin(c * Math.PI / 180);
+  
+  const leftLen = baseLen * sinB / sinC; // a对边
+  const topX = x1 + leftLen * Math.cos(a * Math.PI / 180);
+  const topY = baseY - leftLen * Math.sin(a * Math.PI / 180);
+  
+  document.getElementById('sum-tri').setAttribute('points', `${x1},${baseY} ${topX},${topY} ${x2},${baseY}`);
+  
+  // 重新放置角1（底左）
+  const a1 = document.getElementById('angle1');
+  const a1r = 35;
+  // 角在左下角，开口朝右上
+  const a1x = x1;
+  const a1y = baseY;
+  const ang1Rad = a * Math.PI / 180;
+  const xEnd1a = a1x + a1r * Math.cos(0);
+  const yEnd1a = a1y - a1r * Math.sin(0);
+  const xEnd1b = a1x + a1r * Math.cos(ang1Rad);
+  const yEnd1b = a1y - a1r * Math.sin(ang1Rad);
+  const largeArc = a > 180 ? 1 : 0;
+  a1.setAttribute('d', `M${a1x},${a1y} L${xEnd1a},${yEnd1a} A${a1r},${a1r} 0 ${largeArc},0 ${xEnd1b},${yEnd1b} Z`);
+  
+  const ang1t = document.getElementById('ang1-text');
+  ang1t.setAttribute('x', a1x + 15);
+  ang1t.setAttribute('y', a1y - 12);
+  
+  // 角2（顶部）
+  const a2 = document.getElementById('angle2');
+  const a2r = 35;
+  const a2x = topX;
+  const a2y = topY;
+  // 顶角，朝下开口
+  // 左边从顶角到左下
+  const leftAngle = Math.atan2(baseY - topY, x1 - topX);
+  const rightAngle = Math.atan2(baseY - topY, x2 - topX);
+  
+  const xEnd2a = a2x + a2r * Math.cos(leftAngle);
+  const yEnd2a = a2y + a2r * Math.sin(leftAngle);
+  const xEnd2b = a2x + a2r * Math.cos(rightAngle);
+  const yEnd2b = a2y + a2r * Math.sin(rightAngle);
+  
+  // 扇形方向
+  const sweep = b > 180 ? 1 : 0;
+  a2.setAttribute('d', `M${a2x},${a2y} L${xEnd2a},${yEnd2a} A${a2r},${a2r} 0 ${sweep},1 ${xEnd2b},${yEnd2b} Z`);
+  
+  const ang2t = document.getElementById('ang2-text');
+  ang2t.setAttribute('x', a2x - 10);
+  ang2t.setAttribute('y', a2y + 28);
+  
+  // 角3（底右）
+  const a3 = document.getElementById('angle3');
+  const a3r = 35;
+  const a3x = x2;
+  const a3y = baseY;
+  const ang3Rad = c * Math.PI / 180;
+  const xEnd3a = a3x - a3r * Math.cos(0);
+  const yEnd3a = a3y - a3r * Math.sin(0);
+  const xEnd3b = a3x - a3r * Math.cos(ang3Rad);
+  const yEnd3b = a3y - a3r * Math.sin(ang3Rad);
+  const largeArc3 = c > 180 ? 1 : 0;
+  a3.setAttribute('d', `M${a3x},${a3y} L${xEnd3a},${yEnd3a} A${a3r},${a3r} 0 ${largeArc3},1 ${xEnd3b},${yEnd3b} Z`);
+  
+  const ang3t = document.getElementById('ang3-text');
+  ang3t.setAttribute('x', a3x - 45);
+  ang3t.setAttribute('y', a3y - 12);
+  
+  // 隐藏拼好的角
+  document.getElementById('puzzle-angles').style.display = 'none';
+  document.getElementById('sum-tri').style.display = '';
+  a1.style.display = '';
+  a2.style.display = '';
+  a3.style.display = '';
+  ang1t.style.display = '';
+  ang2t.style.display = '';
+  ang3t.style.display = '';
+}
+
+function playSum(){
+  if(sumPlaying) return;
+  sumPlaying = true;
+  
+  const tri = document.getElementById('sum-tri');
+  const a1 = document.getElementById('angle1');
+  const a2 = document.getElementById('angle2');
+  const a3 = document.getElementById('angle3');
+  const t1 = document.getElementById('ang1-text');
+  const t2 = document.getElementById('ang2-text');
+  const t3 = document.getElementById('ang3-text');
+  const puzzle = document.getElementById('puzzle-angles');
+  
+  // 渐隐三角形
+  tri.style.transition = 'opacity .5s';
+  tri.style.opacity = '0';
+  a1.style.transition = 'opacity .5s';
+  a2.style.transition = 'opacity .5s';
+  a3.style.transition = 'opacity .5s';
+  t1.style.transition = 'opacity .5s';
+  t2.style.transition = 'opacity .5s';
+  t3.style.transition = 'opacity .5s';
+  
+  setTimeout(()=>{
+    tri.style.display = 'none';
+    a1.style.display = 'none';
+    a2.style.display = 'none';
+    a3.style.display = 'none';
+    t1.style.display = 'none';
+    t2.style.display = 'none';
+    t3.style.display = 'none';
+    
+    puzzle.style.display = '';
+    puzzle.style.opacity = '0';
+    puzzle.style.transition = 'opacity .5s';
+    
+    setTimeout(()=>{
+      puzzle.style.opacity = '1';
+      sumPlaying = false;
+    }, 50);
+  }, 500);
+}
+
+function resetSum(){
+  const tri = document.getElementById('sum-tri');
+  const a1 = document.getElementById('angle1');
+  const a2 = document.getElementById('angle2');
+  const a3 = document.getElementById('angle3');
+  const t1 = document.getElementById('ang1-text');
+  const t2 = document.getElementById('ang2-text');
+  const t3 = document.getElementById('ang3-text');
+  const puzzle = document.getElementById('puzzle-angles');
+  
+  puzzle.style.display = 'none';
+  tri.style.display = '';
+  tri.style.opacity = '1';
+  a1.style.display = '';
+  a1.style.opacity = '1';
+  a2.style.display = '';
+  a2.style.opacity = '1';
+  a3.style.display = '';
+  a3.style.opacity = '1';
+  t1.style.display = '';
+  t1.style.opacity = '1';
+  t2.style.display = '';
+  t2.style.opacity = '1';
+  t3.style.display = '';
+  t3.style.opacity = '1';
+}
+
+function changeAngles(){
+  angleSet = (angleSet + 1) % angleSets.length;
+  updateAngles();
+}
+
+// 初始化
+updateSticks();
+updateAngles();
+</script>
+
+</body>
+</html>
