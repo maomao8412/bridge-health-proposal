@@ -1,0 +1,1291 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>词元经济 · 学科体系可视化</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg-primary: #0a0e1a;
+    --bg-secondary: #111827;
+    --bg-card: rgba(30, 41, 59, 0.6);
+    --bg-card-hover: rgba(51, 65, 85, 0.8);
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --accent-primary: #6366f1;
+    --accent-secondary: #8b5cf6;
+    --accent-tertiary: #06b6d4;
+    --accent-gold: #f59e0b;
+    --accent-green: #10b981;
+    --accent-pink: #ec4899;
+    --border-color: rgba(148, 163, 184, 0.1);
+    --glow-primary: rgba(99, 102, 241, 0.3);
+    --glow-secondary: rgba(139, 92, 246, 0.2);
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.7;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  /* 背景装饰 */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: 
+      radial-gradient(ellipse 80% 50% at 20% 0%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+      radial-gradient(ellipse 60% 40% at 80% 100%, rgba(139, 92, 246, 0.12) 0%, transparent 50%),
+      radial-gradient(ellipse 50% 30% at 50% 50%, rgba(6, 182, 212, 0.05) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* 首屏 */
+  .hero {
+    padding: 80px 0 60px;
+    text-align: center;
+  }
+  .hero-badge {
+    display: inline-block;
+    padding: 6px 16px;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 20px;
+    font-size: 13px;
+    color: var(--accent-primary);
+    margin-bottom: 24px;
+    letter-spacing: 2px;
+  }
+  .hero h1 {
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 800;
+    background: linear-gradient(135deg, #fff 0%, #a5b4fc 50%, #c084fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 16px;
+    line-height: 1.2;
+  }
+  .hero-subtitle {
+    font-size: clamp(16px, 2vw, 20px);
+    color: var(--text-secondary);
+    max-width: 700px;
+    margin: 0 auto 40px;
+  }
+  .hero-meta {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+  .meta-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent-primary);
+    box-shadow: 0 0 10px var(--glow-primary);
+  }
+
+  /* 导航 */
+  .nav-bar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10, 14, 26, 0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border-color);
+    padding: 12px 0;
+    margin-bottom: 40px;
+  }
+  .nav-inner {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .nav-inner::-webkit-scrollbar { display: none; }
+  .nav-link {
+    flex-shrink: 0;
+    padding: 8px 16px;
+    border-radius: 8px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .nav-link:hover {
+    background: rgba(99, 102, 241, 0.1);
+    color: var(--text-primary);
+  }
+
+  /* 章节通用 */
+  section {
+    margin-bottom: 80px;
+  }
+  .section-header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+  .section-number {
+    display: inline-block;
+    font-size: 14px;
+    color: var(--accent-primary);
+    letter-spacing: 3px;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+  .section-header h2 {
+    font-size: clamp(24px, 3.5vw, 36px);
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .section-header p {
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  /* 定义卡片 */
+  .definition-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  .definition-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary), var(--accent-tertiary));
+  }
+  .def-title {
+    font-size: 14px;
+    color: var(--accent-tertiary);
+    letter-spacing: 2px;
+    margin-bottom: 16px;
+    font-weight: 600;
+  }
+  .def-main {
+    font-size: clamp(18px, 2.5vw, 24px);
+    line-height: 1.6;
+    margin-bottom: 24px;
+    font-weight: 500;
+  }
+  .def-highlight {
+    color: var(--accent-gold);
+    font-weight: 700;
+  }
+  .def-points {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+  }
+  .def-point {
+    padding: 16px;
+    background: rgba(99, 102, 241, 0.08);
+    border-radius: 12px;
+    border: 1px solid rgba(99, 102, 241, 0.15);
+  }
+  .def-point-label {
+    font-size: 12px;
+    color: var(--accent-primary);
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+  .def-point-text {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  /* 五层体系 - 金字塔可视化 */
+  .pyramid-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .layer-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+  .layer-card:hover {
+    border-color: rgba(99, 102, 241, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  }
+  .layer-card.active {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 30px var(--glow-primary);
+  }
+  .layer-header {
+    display: flex;
+    align-items: center;
+    padding: 24px 28px;
+    gap: 20px;
+  }
+  .layer-number {
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+  .layer-1 .layer-number { background: linear-gradient(135deg, #06b6d4, #0891b2); color: white; }
+  .layer-2 .layer-number { background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; }
+  .layer-3 .layer-number { background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; }
+  .layer-4 .layer-number { background: linear-gradient(135deg, #ec4899, #db2777); color: white; }
+  .layer-5 .layer-number { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
+  
+  .layer-info { flex: 1; }
+  .layer-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .layer-desc {
+    color: var(--text-secondary);
+    font-size: 14px;
+  }
+  .layer-subjects {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+  .subject-tag {
+    padding: 3px 10px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 6px;
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+  .layer-arrow {
+    color: var(--text-muted);
+    font-size: 20px;
+    transition: transform 0.3s;
+    flex-shrink: 0;
+  }
+  .layer-card.active .layer-arrow {
+    transform: rotate(180deg);
+    color: var(--accent-primary);
+  }
+  .layer-detail {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+    background: rgba(0, 0, 0, 0.2);
+  }
+  .layer-card.active .layer-detail {
+    max-height: 2000px;
+  }
+  .layer-detail-inner {
+    padding: 28px;
+    border-top: 1px solid var(--border-color);
+  }
+  .subject-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+  }
+  .subject-item {
+    padding: 18px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.2s;
+  }
+  .subject-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(99, 102, 241, 0.2);
+  }
+  .subject-name {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .subject-icon {
+    font-size: 18px;
+  }
+  .subject-topics {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+  .subject-topics span {
+    display: inline-block;
+    margin-right: 8px;
+  }
+  .subject-why {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed rgba(255,255,255,0.08);
+    font-size: 12px;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  /* 三层结构可视化 */
+  .stack-visual {
+    max-width: 600px;
+    margin: 0 auto;
+    perspective: 1000px;
+  }
+  .stack-layer {
+    position: relative;
+    margin: 0 auto;
+    padding: 32px 24px;
+    text-align: center;
+    border-radius: 16px;
+    margin-bottom: -10px;
+    transition: all 0.3s;
+    cursor: pointer;
+    border: 1px solid var(--border-color);
+  }
+  .stack-layer:hover {
+    transform: translateY(-4px);
+    z-index: 10;
+  }
+  .stack-layer.top {
+    width: 70%;
+    background: linear-gradient(135deg, rgba(236, 72, 153, 0.2), rgba(219, 39, 119, 0.1));
+    border-color: rgba(236, 72, 153, 0.3);
+  }
+  .stack-layer.middle {
+    width: 85%;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(124, 58, 237, 0.1));
+    border-color: rgba(139, 92, 246, 0.3);
+  }
+  .stack-layer.bottom {
+    width: 100%;
+    background: linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(8, 145, 178, 0.1));
+    border-color: rgba(6, 182, 212, 0.3);
+  }
+  .stack-icon { font-size: 32px; margin-bottom: 8px; }
+  .stack-name {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .stack-sub {
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+  .stack-econ {
+    font-size: 12px;
+    color: var(--accent-gold);
+    margin-top: 6px;
+    font-weight: 600;
+  }
+  .stack-arrow {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 20px;
+    margin: 4px 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* 对比表格 */
+  .compare-section {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 24px;
+    align-items: stretch;
+  }
+  .compare-col {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 28px;
+  }
+  .compare-col.left {
+    border-top: 3px solid var(--accent-secondary);
+  }
+  .compare-col.right {
+    border-top: 3px solid var(--accent-tertiary);
+  }
+  .compare-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .compare-subtitle {
+    color: var(--text-secondary);
+    font-size: 13px;
+    margin-bottom: 24px;
+  }
+  .compare-item {
+    margin-bottom: 18px;
+  }
+  .compare-item:last-child { margin-bottom: 0; }
+  .compare-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+  .compare-value {
+    font-size: 14px;
+    color: var(--text-primary);
+    line-height: 1.5;
+  }
+  .compare-vs {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+  }
+  .vs-badge {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 14px;
+    color: white;
+    box-shadow: 0 0 30px var(--glow-primary);
+  }
+  .compare-shared {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-align: center;
+    max-width: 100px;
+    line-height: 1.5;
+  }
+
+  /* 路径时间线 */
+  .path-container {
+    position: relative;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  .path-container::before {
+    content: '';
+    position: absolute;
+    left: 30px;
+    top: 0; bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, var(--accent-primary), var(--accent-secondary), var(--accent-tertiary));
+  }
+  .path-stage {
+    position: relative;
+    padding-left: 80px;
+    margin-bottom: 40px;
+  }
+  .path-stage:last-child { margin-bottom: 0; }
+  .path-dot {
+    position: absolute;
+    left: 20px;
+    top: 4px;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--bg-primary);
+    border: 3px solid var(--accent-primary);
+    box-shadow: 0 0 15px var(--glow-primary);
+  }
+  .path-stage:nth-child(2) .path-dot { border-color: var(--accent-secondary); box-shadow: 0 0 15px var(--glow-secondary); }
+  .path-stage:nth-child(3) .path-dot { border-color: var(--accent-tertiary); box-shadow: 0 0 15px rgba(6,182,212,0.3); }
+  
+  .path-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 24px;
+    transition: all 0.3s;
+  }
+  .path-card:hover {
+    border-color: rgba(99, 102, 241, 0.3);
+    transform: translateX(4px);
+  }
+  .path-duration {
+    display: inline-block;
+    padding: 3px 12px;
+    background: rgba(99, 102, 241, 0.15);
+    color: var(--accent-primary);
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+  .path-stage:nth-child(2) .path-duration { background: rgba(139, 92, 246, 0.15); color: var(--accent-secondary); }
+  .path-stage:nth-child(3) .path-duration { background: rgba(6, 182, 212, 0.15); color: var(--accent-tertiary); }
+  
+  .path-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .path-list {
+    list-style: none;
+    padding: 0;
+  }
+  .path-list li {
+    padding: 6px 0;
+    color: var(--text-secondary);
+    font-size: 14px;
+    padding-left: 20px;
+    position: relative;
+  }
+  .path-list li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--accent-primary);
+  }
+  .path-target {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--border-color);
+    font-size: 13px;
+    color: var(--accent-gold);
+    font-weight: 500;
+  }
+
+  /* 三种角色路径 */
+  .roles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+  }
+  .role-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 28px;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .role-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+  }
+  .role-card:nth-child(1)::before { background: linear-gradient(90deg, #06b6d4, #0891b2); }
+  .role-card:nth-child(2)::before { background: linear-gradient(90deg, #6366f1, #4f46e5); }
+  .role-card:nth-child(3)::before { background: linear-gradient(90deg, #f59e0b, #d97706); }
+  
+  .role-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+  }
+  .role-icon {
+    font-size: 40px;
+    margin-bottom: 16px;
+  }
+  .role-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .role-desc {
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin-bottom: 18px;
+    line-height: 1.6;
+  }
+  .role-subjects-title {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+  .role-subjects {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .role-tag {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    background: rgba(255,255,255,0.05);
+    color: var(--text-secondary);
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .role-tag.core {
+    background: rgba(99, 102, 241, 0.15);
+    color: var(--accent-primary);
+    border-color: rgba(99, 102, 241, 0.2);
+  }
+
+  /* 页脚 */
+  footer {
+    text-align: center;
+    padding: 40px 0 60px;
+    color: var(--text-muted);
+    font-size: 13px;
+    border-top: 1px solid var(--border-color);
+  }
+  .footer-quote {
+    font-size: 16px;
+    color: var(--text-secondary);
+    font-style: italic;
+    margin-bottom: 8px;
+  }
+
+  /* 响应式 */
+  @media (max-width: 768px) {
+    .compare-section {
+      grid-template-columns: 1fr;
+    }
+    .compare-vs {
+      flex-direction: row;
+    }
+    .compare-shared { max-width: none; }
+    .definition-card { padding: 28px; }
+    .layer-header { padding: 18px 20px; flex-wrap: wrap; }
+    .layer-detail-inner { padding: 20px; }
+    .subject-grid { grid-template-columns: 1fr; }
+    .hero { padding: 50px 0 40px; }
+    section { margin-bottom: 56px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- 首屏 -->
+  <header class="hero">
+    <div class="hero-badge">TOKEN ECONOMY · 学科全景图</div>
+    <h1>词元经济专家知识体系</h1>
+    <p class="hero-subtitle">从算力到Agent，从机制设计到治理制度——词元经济是一个横跨技术、经济、商业、法律的超级交叉领域</p>
+    <div class="hero-meta">
+      <div class="meta-item"><span class="meta-dot"></span>5大知识层级</div>
+      <div class="meta-item"><span class="meta-dot" style="background: var(--accent-secondary); box-shadow: 0 0 10px var(--glow-secondary);"></span>18个核心学科</div>
+      <div class="meta-item"><span class="meta-dot" style="background: var(--accent-tertiary); box-shadow: 0 0 10px rgba(6,182,212,0.3);"></span>3种成长路径</div>
+    </div>
+  </header>
+
+  <!-- 导航 -->
+  <nav class="nav-bar">
+    <div class="container" style="padding:0;">
+      <div class="nav-inner">
+        <a href="#definition" class="nav-link">什么是词元经济</a>
+        <a href="#layers" class="nav-link">五层知识体系</a>
+        <a href="#stack" class="nav-link">三层结构模型</a>
+        <a href="#compare" class="nav-link">词元 vs 通证</a>
+        <a href="#path" class="nav-link">学习路径</a>
+        <a href="#roles" class="nav-link">三种角色</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 什么是词元经济 -->
+  <section id="definition">
+    <div class="section-header">
+      <div class="section-number">01 / 基础认知</div>
+      <h2>什么是词元经济？</h2>
+      <p>先理解概念，再谈知识体系</p>
+    </div>
+    <div class="definition-card">
+      <div class="def-title">核心定义</div>
+      <div class="def-main">
+        词元（Token）是大模型的<span class="def-highlight">"基础计算单元"</span>——输入按token算、输出按token算、训练数据按token量、API调用按token计费。
+        词元经济就是围绕token的生产、定价、交易、分配、消费形成的一整套经济体系。
+      </div>
+      <div class="def-points">
+        <div class="def-point">
+          <div class="def-point-label">⚡ 本质</div>
+          <div class="def-point-text">AI时代的"电力"——大模型生产和消费的基本度量衡</div>
+        </div>
+        <div class="def-point">
+          <div class="def-point-label">📊 计量</div>
+          <div class="def-point-text">输入token + 输出token，不同模型定价差异可达百倍</div>
+        </div>
+        <div class="def-point">
+          <div class="def-point-label">🏗️ 体系</div>
+          <div class="def-point-text">算力层→模型层→应用层，每层都有独立的经济学规律</div>
+        </div>
+        <div class="def-point">
+          <div class="def-point-label">🚀 趋势</div>
+          <div class="def-point-text">从计价单位→价值尺度→Agent间交换媒介，属性持续演化</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 五层知识体系 -->
+  <section id="layers">
+    <div class="section-header">
+      <div class="section-number">02 / 核心内容</div>
+      <h2>五层知识体系</h2>
+      <p>从技术底座到前沿交叉，由下而上逐层构建认知</p>
+    </div>
+
+    <div class="pyramid-container">
+
+      <!-- 第一层 -->
+      <div class="layer-card layer-1" onclick="toggleLayer(this)">
+        <div class="layer-header">
+          <div class="layer-number">1</div>
+          <div class="layer-info">
+            <div class="layer-title">技术底座</div>
+            <div class="layer-desc">不懂技术，就不懂token为什么值钱、成本怎么来的</div>
+            <div class="layer-subjects">
+              <span class="subject-tag">大模型原理</span>
+              <span class="subject-tag">算力基础设施</span>
+              <span class="subject-tag">分布式系统</span>
+            </div>
+          </div>
+          <div class="layer-arrow">▼</div>
+        </div>
+        <div class="layer-detail">
+          <div class="layer-detail-inner">
+            <div class="subject-grid">
+              <div class="subject-item">
+                <div class="subject-name"><span class="subject-icon">🧠</span>大模型原理与NLP</div>
+                <div class="subject-topics">
+                  <span>分词算法(BPE/WordPiece)</span>
+                  <span>Transformer架构</span>
+                  <span>注意力机制与KV Cache</span>
+                  <span>训练与推理全流程</span>
+                  <span>多模态Tokenization</span>
+                </div>
+                <div class="subject-why">💡 为什么重要：理解token的"价值密度"和推理成本的结构来源</div>
+              </div>
+              <div class="subject-item">
+                <div class="subject-name"><span class="subject-icon">🖥️</span>算力基础设施</div>
+                <div class="subject-topics">
+                  <span>GPU/AI芯片架构</span>
+                  <span>算力集群调度</span>
+                  <span>MoE路由</span>
+                  <span>算力成本模型</span>
+                  <span>算力网络与调度</span>
+                </div>
+                <div class="subject-why">💡 为什么重要：Token的生产成本本质上是算力成本，这是整个经济的底盘</div>
+              </div>
+              <div class="subject-item">
+                <div class="subject-name"><span class="subject-icon">🌐</span>分布式系统与云计算</div>
+                <div class="subject-topics">
+                  <span>云服务定价模型</span>
+                  <span>边缘计算</span>
+                  <span>算力网络协议</span>
+                  <span>弹性伸缩与Spot实例</span>
+                </div>
+                <div class="subject-why">💡 为什么重要：理解算力像电网一样调度的逻辑，是"算力互联网"的基础</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第二层 -->
+      <div class="layer-card layer-2" onclick="toggleLayer(this)">
+        <div class="layer-header">
+          <div class="layer-number">2</div>
+          <div class="layer-info">
+            <div class="layer-title">经济学核心</div>
+            <div class="layer-desc">词元经济的理论骨架——所有商业模式的底层逻辑</div>
+            <div class="layer-subjects">
+              <span class="subject-tag">微观经济学</span>
+              <span class="subject-tag">机制设计</span>
+              <span class="subject-tag">货币经济学</span>
+              <span class="subject-tag">计量经济学</span>
+            </div>
+          </div>
+          <div class="layer-arrow">▼</div>
+        </div>
+        <div class="layer-detail">
+          <div class="layer-detail-inner">
+            <div class="subject-grid">
+              <div class="subject-item">
+                <div class="subject-name"><span class="subject-icon">📈</span>微观经济学 + 产业组织</div>
+                <div class="subject-topics">
+                  <span>成本理论与规模经济</span>
+                  <span>定价理论与价格歧视</span>
+                  <span>市场结构与寡头竞争</span>
+                  <span>网络效应与平台经济</span>
+                  <span>双边市场理论</span>
+                </div>
+                <div class="subject-why">💡 为什么重要：大模型市场的竞争格局、定价策略、商业模式都在这里找到答案</div>
+              </div>
+              <div class="subject-item">
+                <div class="subject-name"><span class="subject-icon">🎯</span>拍卖理论与机制设计</div>
+                <div class="subject-topics">
+                  <span>算力竞价机制</span>
+                  <span>动态定价与峰谷定价</span>
+                  <span>API配额与排队</span>
+                  <span>模型路由优化</span>
+                </div>
+                <div class="subject-why">💡 为什么重要：算力稀缺时怎么分配、怎么定价，本质上都是机制设计问题</div>
+              </div>
+              <div class="subject-item">
+                <div class="subject-name"><span class="subject-icon">💰</span>货币经济学</div>
+                <div class="subject-topics">
+                  <span>Token作为价值尺度</span>
+                  <span>Token作为交换媒介</span>
+                  <span>流通速度理论</span>
+                  <span>推理成本下降="通胀"效应</span>
+                </div>
+                <div class="subject-why">💡 为什么重要：Token正在成为AI经济体系中的"准货币"，货币规律开始适用</div>
+              </div>
+              <div class="subject-item">
+                <div class="subject-name"><span class="subject-icon">📊</span>计量经济学</div>
+                <div class="subject-topics">
+                  <span>需求弹性估计</span>
+                  <span>成本函数估计</span>
+                  <span>市场势力测度</span>
+                  <span>反事实模拟</span>
+                </div>
+                <div class="subject-why">💡 为什么重要：用数据说话——降价能带来多少增收？某家厂商有多大定价权？</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第三层 -->
+      <div class="layer-card layer-3" onclick="toggleLayer(this)">
+        <div class="layer-header">
+          <div class="layer-number">3</div>
+          <div class="layer-info">
+            <div class="layer-title">商业与市场</div>
+            <div class="layer-desc">技术+经济落地到真实商业世界的具体形态</div>
+            <div class="layer-subjects">
+              <span class="subject-tag">平台战略</span>
+              <span class="subject-tag">数字经济学</span>
+              <span class="subject-tag">劳动经济学</span>
+            </div>
+          </div>
+          <div class="layer-arrow">▼</div>
+        </div>
+        <div class="layer-detail">
+          <div class="layer-detail-inner">
+            <div class="subject-grid">
+              <div class="subject-item">
+                <div class="subject-name"><span class="subject-icon">🏢</span>平台战略与商业模式</div>
+                <div class="subject-topics">
+                  <span>分层结构（基建→模型→应用）</span>
+                  <span>订阅制 vs 按量付费</span>
+                  <span>开源 vs 闭源战略</span>
+                  <span>垂直整合 vs 水平分工</span>
+                </div>
+                <div class="subject-why">💡 为什么重要：理解每一层的价值捕获能力，判断谁赚大钱、谁赚辛苦钱</div>
+              </div>
+              <div class="subject-item">
+                <div class="subject-name"><span class="subject-icon">💿</span>数字经济学</div>
+                <div class="subject-topics">
+                  <span>零边际成本悖论</span>
+                  <span>信息产品定价</span>
+                  <span>转换成本与锁定</span>
+                  <span>数据互补性与飞轮</span>
+                </div>
+                <div class="subject-why">💡 为什么重要：大模型是数字产品的极致形态，数字经济学的规律高度适用</div>
+              </div>
+              <div class="subject-item">
+                <div class="subject-name"><span class="subject-icon">👷</span>劳动经济学</div>
+                <div class="subject-topics">
+                  <span>替代效应与互补效应</span>
+                  <span>技能偏向型技术进步</span>
+                  <span>新型就业形态</span>
+                  <span>收入分配效应</span>
+                </div>
+                <div class="subject-why">💡 为什么重要：AI最终影响的是人和工作——这是词元经济的社会维度</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第四层 -->
+      <div class="layer-card layer-4" onclick="toggleLayer(this)">
+        <div class="layer-header">
+          <div class="layer-number">4</div>
+          <div class="layer-info">
+            <div class="layer-title">治理与制度</div>
+            <div class="layer-desc">词元经济不能野蛮生长——规则、法律、安全是边界</div>
+            <div class="layer-subjects">
+              <span class="subject-tag">反垄断</span>
+              <span class="subject-tag">数据要素</span>
+              <span class="subject-tag">安全经济学</span>
+            </div>
+          </div>
+          <div class="layer-arrow">▼</div>
+        </div>
+        <div class="layer-detail">
+          <div class="layer-detail-inner">
+            <div class="subject-grid">
+              <div class="subject-item">
+                <div class="subject-name"><span class="subject-icon">⚖️</span>反垄断与竞争政策</div>
+                <div class="subject-topics">
+                  <span>相关市场界定</span>
+                  <span>市场支配地位认定</span>
+                  <span>杀手级收购审查</span>
+                  <span>开源的反垄断含义</span>
+                </div>
+                <div class="subject-why">💡 为什么重要：大模型市场集中度极高，反垄断将是行业最大的政策变量之一</div>
+              </div>
+              <div class="subject-item">
+                <div class="subject-name"><span class="subject-icon">📦</span>数据要素与知识产权</div>
+                <div class="subject-topics">
+                  <span>训练数据版权</span>
+                  <span>数据定价方法论</span>
+                  <span>生成内容版权归属</span>
+                  <span>数据交易所与要素市场</span>
+                </div>
+                <div class="subject-why">💡 为什么重要：数据是大模型的"粮食"，数据产权和定价直接决定词元经济的成本结构</div>
+              </div>
+              <div class="subject-item">
+                <div class="subject-name"><span class="subject-icon">🛡️</span>安全经济学</div>
+                <div class="subject-topics">
+                  <span>对齐成本评估</span>
+                  <span>攻防经济分析</span>
+                  <span>安全投资最优水平</span>
+                  <span>责任归属机制</span>
+                </div>
+                <div class="subject-why">💡 为什么重要：安全不是纯技术问题，是经济问题——花多少钱、谁承担、怎么激励</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第五层 -->
+      <div class="layer-card layer-5" onclick="toggleLayer(this)">
+        <div class="layer-header">
+          <div class="layer-number">5</div>
+          <div class="layer-info">
+            <div class="layer-title">前沿交叉</div>
+            <div class="layer-desc">真正的专家级领域——正在形成、还在快速演化</div>
+            <div class="layer-subjects">
+              <span class="subject-tag">Agent经济学</span>
+              <span class="subject-tag">计算经济学</span>
+              <span class="subject-tag">信息经济学</span>
+            </div>
+          </div>
+          <div class="layer-arrow">▼</div>
+        </div>
+        <div class="layer-detail">
+          <div class="layer-detail-inner">
+            <div class="subject-grid">
+              <div class="subject-item">
+                <div class="subject-name"><span class="subject-icon">🤖</span>AI Agent经济学</div>
+                <div class="subject-topics">
+                  <span>Agent间的自主交易</span>
+                  <span>多Agent系统经济均衡</span>
+                  <span>算力资源市场配置</span>
+                  <span>AI经济的治理框架</span>
+                </div>
+                <div class="subject-why">💡 为什么重要：当AI能自主交易时，整个经济学的假设都要重写——这是最前沿的方向</div>
+              </div>
+              <div class="subject-item">
+                <div class="subject-name"><span class="subject-icon">🔢</span>计算经济学 / 算法机制设计</div>
+                <div class="subject-topics">
+                  <span>动态机制设计</span>
+                  <span>计算社会选择</span>
+                  <span>算法博弈论</span>
+                  <span>多主体建模仿真</span>
+                </div>
+                <div class="subject-why">💡 为什么重要：当参与者是算法而不是人，传统博弈论需要用计算方法重新构建</div>
+              </div>
+              <div class="subject-item">
+                <div class="subject-name"><span class="subject-icon">📡</span>信息经济学</div>
+                <div class="subject-topics">
+                  <span>质量不确定性（柠檬市场）</span>
+                  <span>信号理论与模型评测</span>
+                  <span>道德风险与偷工减料</span>
+                  <span>逆向选择问题</span>
+                </div>
+                <div class="subject-why">💡 为什么重要：模型质量看不见摸不着——信息不对称是词元市场最大的摩擦之一</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 三层结构模型 -->
+  <section id="stack">
+    <div class="section-header">
+      <div class="section-number">03 / 认知框架</div>
+      <h2>词元经济的三层结构</h2>
+      <p>每一层都有独立的经济学规律，不能混为一谈</p>
+    </div>
+    <div class="stack-visual">
+      <div class="stack-layer top">
+        <div class="stack-icon">📱</div>
+        <div class="stack-name">应用层</div>
+        <div class="stack-sub">AI应用 · Agent · 工作流</div>
+        <div class="stack-econ">数字内容经济学</div>
+      </div>
+      <div class="stack-arrow">⇅ 用token消费 ⇅</div>
+      <div class="stack-layer middle">
+        <div class="stack-icon">🧠</div>
+        <div class="stack-name">模型层</div>
+        <div class="stack-sub">基础模型 · 微调 · 推理服务</div>
+        <div class="stack-econ">平台经济学</div>
+      </div>
+      <div class="stack-arrow">⇅ 用token计价 ⇅</div>
+      <div class="stack-layer bottom">
+        <div class="stack-icon">🖥️</div>
+        <div class="stack-name">算力层</div>
+        <div class="stack-sub">GPU集群 · 算力网络 · 数据中心</div>
+        <div class="stack-econ">算力经济学（类似电力经济学）</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 词元 vs 通证 -->
+  <section id="compare">
+    <div class="section-header">
+      <div class="section-number">04 / 概念辨析</div>
+      <h2>词元经济 vs 通证经济</h2>
+      <p>都叫Token，但根本不是一回事——底层逻辑天差地别</p>
+    </div>
+    <div class="compare-section">
+      <div class="compare-col left">
+        <div class="compare-title">通证经济</div>
+        <div class="compare-subtitle">区块链 / Web3 语境</div>
+        <div class="compare-item">
+          <div class="compare-label">本质</div>
+          <div class="compare-value">价值凭证 / 准货币</div>
+        </div>
+        <div class="compare-item">
+          <div class="compare-label">底层技术</div>
+          <div class="compare-value">区块链共识机制</div>
+        </div>
+        <div class="compare-item">
+          <div class="compare-label">稀缺性</div>
+          <div class="compare-value">人为设定（总量固定或通胀率固定）</div>
+        </div>
+        <div class="compare-item">
+          <div class="compare-label">定价逻辑</div>
+          <div class="compare-value">市场投机 + 预期 + 叙事</div>
+        </div>
+        <div class="compare-item">
+          <div class="compare-label">主要用途</div>
+          <div class="compare-value">治理、激励、支付、投资</div>
+        </div>
+      </div>
+      <div class="compare-vs">
+        <div class="vs-badge">VS</div>
+        <div class="compare-shared">共同点：<br>都是数字经济的新价值度量单位<br>都涉及机制设计<br>都需要治理框架</div>
+      </div>
+      <div class="compare-col right">
+        <div class="compare-title">词元经济</div>
+        <div class="compare-subtitle">大模型 / AI 语境</div>
+        <div class="compare-item">
+          <div class="compare-label">本质</div>
+          <div class="compare-value">计算单元 / AI服务度量衡</div>
+        </div>
+        <div class="compare-item">
+          <div class="compare-label">底层技术</div>
+          <div class="compare-value">大模型推理与训练</div>
+        </div>
+        <div class="compare-item">
+          <div class="compare-label">稀缺性</div>
+          <div class="compare-value">算力约束（动态变化，长期下降）</div>
+        </div>
+        <div class="compare-item">
+          <div class="compare-label">定价逻辑</div>
+          <div class="compare-value">成本 + 技术溢价 + 品牌壁垒</div>
+        </div>
+        <div class="compare-item">
+          <div class="compare-label">主要用途</div>
+          <div class="compare-value">调用模型、生成内容、训练模型</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 学习路径 -->
+  <section id="path">
+    <div class="section-header">
+      <div class="section-number">05 / 成长路径</div>
+      <h2>三阶段学习路线</h2>
+      <p>从入门到精通，按阶段递进，不要一上来啃最难的</p>
+    </div>
+    <div class="path-container">
+      <div class="path-stage">
+        <div class="path-dot"></div>
+        <div class="path-card">
+          <div class="path-duration">入门期 · 0-1年</div>
+          <div class="path-title">建立基本认知框架</div>
+          <ul class="path-list">
+            <li>搞懂大模型基本原理（token到底是什么、怎么算出来的）</li>
+            <li>微观经济学基础（供需、定价、市场结构）</li>
+            <li>产业组织理论入门</li>
+            <li>理解主流模型厂商的商业模式</li>
+            <li>多看行业报告和实际案例</li>
+          </ul>
+          <div class="path-target">🎯 目标：能听懂行业对话、能判断基本商业模式是否成立</div>
+        </div>
+      </div>
+      <div class="path-stage">
+        <div class="path-dot"></div>
+        <div class="path-card">
+          <div class="path-duration">进阶期 · 1-3年</div>
+          <div class="path-title">形成专业分析能力</div>
+          <ul class="path-list">
+            <li>深入学习机制设计理论 + 拍卖理论</li>
+            <li>网络经济学与平台经济学</li>
+            <li>通证经济学专题研究</li>
+            <li>智能合约开发实践</li>
+            <li>密码学与分布式系统进阶</li>
+            <li>计量经济学与数据分析</li>
+          </ul>
+          <div class="path-target">🎯 目标：能独立分析一个token经济模型、能设计简单的激励机制</div>
+        </div>
+      </div>
+      <div class="path-stage">
+        <div class="path-dot"></div>
+        <div class="path-card">
+          <div class="path-duration">专家期 · 3-5年</div>
+          <div class="path-title">前沿探索与原创贡献</div>
+          <ul class="path-list">
+            <li>复杂系统建模与多主体仿真</li>
+            <li>零知识证明与隐私计算</li>
+            <li>AI Agent经济学（最前沿方向）</li>
+            <li>法律合规与监管研究</li>
+            <li>深耕一个垂直产业领域</li>
+            <li>经济哲学与制度设计</li>
+          </ul>
+          <div class="path-target">🎯 目标：能设计完整的经济系统、能预判行业趋势、有原创洞见</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 三种角色 -->
+  <section id="roles">
+    <div class="section-header">
+      <div class="section-number">06 / 角色定位</div>
+      <h2>三种角色，三条路径</h2>
+      <p>不需要每个领域都精通——找准你的定位，重点突破</p>
+    </div>
+    <div class="roles-grid">
+      <div class="role-card">
+        <div class="role-icon">👔</div>
+        <div class="role-title">决策者 / 投资人</div>
+        <div class="role-desc">甲方视角：判断方向、选团队、控风险。不需要自己动手，但要有判断力。</div>
+        <div class="role-subjects-title">重点学习</div>
+        <div class="role-subjects">
+          <span class="role-tag core">经济学基础</span>
+          <span class="role-tag core">货币银行学</span>
+          <span class="role-tag core">机制设计</span>
+          <span class="role-tag core">法律合规</span>
+          <span class="role-tag">平台战略</span>
+          <span class="role-tag">行业案例</span>
+        </div>
+      </div>
+      <div class="role-card">
+        <div class="role-icon">⚙️</div>
+        <div class="role-title">产品 / 经济模型设计师</div>
+        <div class="role-desc">实操视角：设计模型、调参数、做验证。技术和经济两边都要够硬。</div>
+        <div class="role-subjects-title">重点学习</div>
+        <div class="role-subjects">
+          <span class="role-tag core">大模型技术</span>
+          <span class="role-tag core">机制设计</span>
+          <span class="role-tag core">拍卖理论</span>
+          <span class="role-tag core">计量经济学</span>
+          <span class="role-tag">行为经济学</span>
+          <span class="role-tag">数据分析</span>
+        </div>
+      </div>
+      <div class="role-card">
+        <div class="role-icon">🔬</div>
+        <div class="role-title">研究者 / 学术派</div>
+        <div class="role-desc">前沿视角：探索新理论、新模型。要做没人做过的事。</div>
+        <div class="role-subjects-title">重点学习</div>
+        <div class="role-subjects">
+          <span class="role-tag core">高等数学</span>
+          <span class="role-tag core">博弈论</span>
+          <span class="role-tag core">计算经济学</span>
+          <span class="role-tag core">复杂系统</span>
+          <span class="role-tag">AI Agent经济</span>
+          <span class="role-tag">经济哲学</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 页脚 -->
+  <footer>
+    <div class="footer-quote">"Token是AI时代的电力，词元经济是数字经济的基础设施。"</div>
+    <div>词元经济学科体系可视化 · 2026</div>
+  </footer>
+
+</div>
+
+<script>
+  function toggleLayer(card) {
+    const wasActive = card.classList.contains('active');
+    // 关闭所有
+    document.querySelectorAll('.layer-card').forEach(c => c.classList.remove('active'));
+    // 如果之前没打开，就打开当前的
+    if (!wasActive) {
+      card.classList.add('active');
+    }
+  }
+
+  // 滚动时高亮导航
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-link');
+  
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(section => {
+      const sectionTop = section.offsetTop - 100;
+      if (window.scrollY >= sectionTop) {
+        current = section.getAttribute('id');
+      }
+    });
+    navLinks.forEach(link => {
+      link.style.background = '';
+      link.style.color = '';
+      if (link.getAttribute('href') === '#' + current) {
+        link.style.background = 'rgba(99, 102, 241, 0.15)';
+        link.style.color = '#f1f5f9';
+      }
+    });
+  });
+
+  // 默认展开第一层
+  document.querySelector('.layer-1').classList.add('active');
+</script>
+
+</body>
+</html>
