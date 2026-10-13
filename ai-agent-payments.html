@@ -1,0 +1,1085 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Agent 支付全景：协议·项目·数据 | 2026 Q2-Q3 深度调研</title>
+<style>
+:root{
+  --canvas:#0c1117;
+  --surface:#141b24;
+  --surface-2:#1b2431;
+  --surface-3:#222c3c;
+  --ink:#e6edf3;
+  --ink-dim:#a8b4c2;
+  --ink-mute:#7a8896;
+  --rule:#2a3443;
+  --rule-2:#344154;
+  --accent:#00d4aa;
+  --accent-2:#4a9eff;
+  --accent-warm:#f5a623;
+  --accent-ink:#062018;
+  --warn:#e8574d;
+  --ok:#00d4aa;
+  --info:#4a9eff;
+  --font-body:system-ui,-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  --font-mono:ui-monospace,"SF Mono","Menlo","Consolas",monospace;
+  --fs-hero:clamp(28px,4vw,44px);
+  --fs-h1:clamp(22px,2.8vw,32px);
+  --fs-h2:clamp(17px,2vw,22px);
+  --fs-h3:clamp(14px,1.6vw,16px);
+  --fs-body:15px;
+  --lh-body:1.65;
+  --lh-tight:1.25;
+  --gutter:clamp(16px,4vw,48px);
+  --content-w:min(1280px,100% - var(--gutter) * 2);
+  --radius:6px;
+  --radius-lg:10px;
+  --focus-ring:var(--accent-2);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  background:var(--canvas);
+  color:var(--ink);
+  font-family:var(--font-body);
+  font-size:var(--fs-body);
+  line-height:var(--lh-body);
+  -webkit-font-smoothing:antialiased;
+  font-variant-numeric:tabular-nums;
+  overflow-x:hidden;
+}
+a{color:var(--accent-2);text-decoration:none;transition:color .15s}
+a:hover{color:var(--accent)}
+a:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;border-radius:2px}
+::selection{background:var(--accent);color:var(--accent-ink)}
+
+/* ============ Header ============ */
+.masthead{
+  position:relative;
+  padding:clamp(40px,6vw,80px) var(--gutter) clamp(24px,3vw,40px);
+  border-bottom:1px solid var(--rule);
+  background:
+    radial-gradient(900px 400px at 80% -10%,rgba(74,158,255,.08),transparent 60%),
+    radial-gradient(600px 300px at 10% 20%,rgba(0,212,170,.06),transparent 60%),
+    var(--canvas);
+  overflow:hidden;
+}
+.masthead::after{
+  content:"";
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(to right,rgba(255,255,255,.03) 1px,transparent 1px),
+    linear-gradient(to bottom,rgba(255,255,255,.03) 1px,transparent 1px);
+  background-size:48px 48px;
+  mask-image:radial-gradient(ellipse at 50% 0%,#000 30%,transparent 70%);
+  pointer-events:none;
+}
+.masthead-inner{max-width:var(--content-w);margin:0 auto;position:relative;z-index:1}
+.kicker{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:12px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--accent);font-family:var(--font-mono);
+  margin-bottom:20px;
+}
+.kicker::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent)}
+h1{
+  font-size:var(--fs-hero);
+  line-height:var(--lh-tight);
+  font-weight:800;
+  letter-spacing:-.02em;
+  margin-bottom:16px;
+}
+h1 .grad{background:linear-gradient(90deg,var(--accent) 0%,var(--accent-2) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lede{
+  max-width:720px;
+  font-size:clamp(15px,1.5vw,17px);
+  color:var(--ink-dim);
+  line-height:1.6;
+}
+.meta-row{
+  display:flex;flex-wrap:wrap;gap:20px;
+  margin-top:24px;
+  font-size:13px;color:var(--ink-mute);font-family:var(--font-mono);
+}
+.meta-row span{display:inline-flex;align-items:center;gap:6px}
+.meta-row strong{color:var(--ink-dim);font-weight:600}
+
+/* ============ Layout ============ */
+main{max-width:var(--content-w);margin:0 auto;padding:0 var(--gutter)}
+section{padding:clamp(48px,7vw,80px) 0;border-bottom:1px solid var(--rule)}
+section:last-of-type{border-bottom:none}
+.section-head{margin-bottom:clamp(28px,4vw,44px)}
+.section-num{
+  display:inline-block;
+  font-family:var(--font-mono);font-size:12px;
+  color:var(--accent);
+  padding:4px 10px;
+  background:rgba(0,212,170,.08);
+  border:1px solid rgba(0,212,170,.2);
+  border-radius:var(--radius);
+  letter-spacing:.1em;
+  margin-bottom:14px;
+}
+h2{
+  font-size:var(--fs-h1);
+  font-weight:700;
+  line-height:var(--lh-tight);
+  letter-spacing:-.01em;
+  margin-bottom:8px;
+}
+.section-sub{color:var(--ink-dim);font-size:15px;max-width:760px}
+h3{
+  font-size:var(--fs-h2);
+  font-weight:600;
+  line-height:var(--lh-tight);
+  margin:clamp(24px,3vw,36px) 0 12px;
+  color:var(--ink);
+}
+h3 .num{color:var(--ink-mute);font-family:var(--font-mono);font-size:.85em;margin-right:6px}
+h4{
+  font-size:var(--fs-h3);
+  font-weight:600;
+  margin:18px 0 8px;
+  color:var(--ink);
+}
+p{margin-bottom:12px}
+p.mono{font-family:var(--font-mono);font-size:13px;color:var(--ink-dim)}
+p+p{margin-top:0}
+.lead-text{font-size:16px;color:var(--ink-dim);line-height:1.65;margin-bottom:20px;max-width:780px}
+
+/* ============ Stats strip (hero) ============ */
+.stats-strip{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:1px;
+  background:var(--rule);
+  border:1px solid var(--rule);
+  border-radius:var(--radius-lg);
+  overflow:hidden;
+  margin-top:32px;
+}
+.stat{
+  background:var(--surface);
+  padding:clamp(16px,2vw,22px) clamp(16px,2vw,24px);
+}
+.stat-label{
+  font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-mute);margin-bottom:8px;font-family:var(--font-mono);
+}
+.stat-value{
+  font-size:clamp(22px,2.4vw,30px);font-weight:700;
+  line-height:1.1;font-family:var(--font-mono);
+  color:var(--ink);
+}
+.stat-value.accent{color:var(--accent)}
+.stat-value.warn{color:var(--warn)}
+.stat-value.info{color:var(--accent-2)}
+.stat-value.warm{color:var(--accent-warm)}
+.stat-delta{font-size:12px;color:var(--ink-mute);margin-top:6px;font-family:var(--font-mono)}
+
+/* ============ Key finding callout ============ */
+.callout{
+  position:relative;
+  padding:20px 24px;
+  background:linear-gradient(135deg,rgba(0,212,170,.06),rgba(74,158,255,.04));
+  border:1px solid rgba(0,212,170,.2);
+  border-radius:var(--radius-lg);
+  margin:24px 0;
+}
+.callout-label{
+  position:absolute;top:-10px;left:16px;
+  background:var(--canvas);
+  padding:2px 10px;
+  font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--accent);font-family:var(--font-mono);font-weight:600;
+}
+.callout p{margin:0;font-size:15px;color:var(--ink);line-height:1.6}
+.callout p+p{margin-top:8px}
+.callout.warn{background:linear-gradient(135deg,rgba(232,87,77,.06),rgba(245,166,35,.04));border-color:rgba(232,87,77,.2)}
+.callout.warn .callout-label{color:var(--warn)}
+.callout.info{background:linear-gradient(135deg,rgba(74,158,255,.06),rgba(0,212,170,.04));border-color:rgba(74,158,255,.2)}
+.callout.info .callout-label{color:var(--accent-2)}
+
+/* ============ TOC / Nav ============ */
+.toc{
+  position:sticky;top:0;z-index:10;
+  background:rgba(12,17,23,.92);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--rule);
+  padding:10px var(--gutter);
+  overflow-x:auto;
+}
+.toc-inner{
+  max-width:var(--content-w);margin:0 auto;
+  display:flex;align-items:center;gap:6px;
+  white-space:nowrap;
+}
+.toc-title{
+  font-family:var(--font-mono);font-size:11px;
+  color:var(--ink-mute);letter-spacing:.1em;
+  text-transform:uppercase;
+  margin-right:12px;
+}
+.toc a{
+  font-size:13px;color:var(--ink-dim);
+  padding:6px 12px;border-radius:999px;
+  transition:all .15s;
+}
+.toc a:hover{color:var(--ink);background:var(--surface-2)}
+.toc a.active{color:var(--accent);background:rgba(0,212,170,.08)}
+
+/* ============ Protocol cards ============ */
+.protocol-grid{display:grid;gap:20px}
+.protocol-card{
+  background:var(--surface);
+  border:1px solid var(--rule);
+  border-radius:var(--radius-lg);
+  padding:clamp(20px,2.4vw,28px);
+  position:relative;
+  transition:border-color .2s,transform .2s;
+}
+.protocol-card:hover{border-color:var(--rule-2)}
+.protocol-head{
+  display:flex;flex-wrap:wrap;align-items:baseline;
+  justify-content:space-between;gap:12px;
+  margin-bottom:16px;padding-bottom:14px;
+  border-bottom:1px solid var(--rule);
+}
+.protocol-name{font-size:20px;font-weight:700;line-height:1.2}
+.protocol-tag{
+  font-family:var(--font-mono);font-size:11px;
+  letter-spacing:.1em;text-transform:uppercase;
+  padding:4px 8px;border-radius:var(--radius);
+  border:1px solid var(--rule-2);
+  color:var(--ink-dim);
+}
+.protocol-tag.stablecoin{color:var(--accent);border-color:rgba(0,212,170,.3)}
+.protocol-tag.card{color:var(--accent-warm);border-color:rgba(245,166,35,.3)}
+.protocol-tag.hybrid{color:var(--accent-2);border-color:rgba(74,158,255,.3)}
+.protocol-tag.id{color:#c490ff;border-color:rgba(196,144,255,.3)}
+.protocol-tag.auth{color:#ff8fb1;border-color:rgba(255,143,177,.3)}
+.protocol-desc{color:var(--ink-dim);font-size:14px;line-height:1.55;margin-bottom:14px}
+.protocol-meta{display:flex;flex-wrap:wrap;gap:14px 24px;font-size:12px;color:var(--ink-mute);font-family:var(--font-mono);margin-bottom:14px}
+.protocol-meta span strong{color:var(--ink-dim);font-weight:600;margin-right:4px}
+.protocol-stats{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));
+  gap:10px;
+  padding:14px;
+  background:var(--surface-2);
+  border-radius:var(--radius);
+  margin-bottom:14px;
+}
+.mini-stat .lbl{font-size:10px;color:var(--ink-mute);letter-spacing:.1em;text-transform:uppercase;font-family:var(--font-mono);margin-bottom:4px}
+.mini-stat .val{font-size:17px;font-weight:700;color:var(--ink);font-family:var(--font-mono);line-height:1.1}
+.mini-stat .val small{font-size:11px;color:var(--ink-mute);font-weight:400}
+.protocol-source{font-size:12px;color:var(--ink-mute);margin-top:8px}
+.protocol-source a{color:var(--accent-2)}
+
+/* ============ Project rows ============ */
+.project-list{display:grid;gap:24px}
+.project{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  background:var(--surface);
+  border:1px solid var(--rule);
+  border-radius:var(--radius-lg);
+  padding:clamp(20px,2.4vw,28px);
+}
+.project-head{
+  display:flex;flex-wrap:wrap;align-items:baseline;
+  justify-content:space-between;gap:12px;
+  margin-bottom:12px;
+}
+.project-head h3{margin:0;font-size:20px}
+.project-tag{
+  font-family:var(--font-mono);font-size:11px;
+  letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-mute);
+}
+.project-stats{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:1px;background:var(--rule);border:1px solid var(--rule);
+  border-radius:var(--radius);overflow:hidden;margin:14px 0;
+}
+.project-stats>div{background:var(--surface-2);padding:12px 14px}
+.project-stats .lbl{font-size:10px;color:var(--ink-mute);letter-spacing:.1em;text-transform:uppercase;font-family:var(--font-mono);margin-bottom:4px}
+.project-stats .val{font-size:18px;font-weight:700;color:var(--accent);font-family:var(--font-mono);line-height:1.2}
+.project-stats .val small{display:block;font-size:11px;color:var(--ink-mute);font-weight:400;margin-top:2px}
+.project p{font-size:14px;color:var(--ink-dim);line-height:1.55}
+
+/* ============ Data tables ============ */
+.table-wrap{
+  overflow-x:auto;
+  margin:18px 0;
+  border:1px solid var(--rule);
+  border-radius:var(--radius-lg);
+  background:var(--surface);
+}
+table{width:100%;border-collapse:collapse;font-size:14px}
+caption{
+  text-align:left;padding:14px 18px;
+  font-size:13px;color:var(--ink-dim);font-weight:600;
+  border-bottom:1px solid var(--rule);
+  background:var(--surface-2);
+}
+th,td{padding:10px 18px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
+th{
+  font-family:var(--font-mono);font-size:11px;font-weight:600;
+  letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-mute);background:var(--surface-2);
+  position:sticky;top:0;
+}
+td{color:var(--ink-dim)}
+td strong,td .mono-val{color:var(--ink);font-family:var(--font-mono);font-weight:600}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:var(--surface-2)}
+.num-col{text-align:right;font-variant-numeric:tabular-nums}
+
+/* ============ Stack visualization ============ */
+.stack{
+  display:grid;gap:2px;
+  border-radius:var(--radius-lg);
+  overflow:hidden;
+  margin:24px 0;
+  background:var(--rule);
+}
+.stack-layer{
+  background:var(--surface);
+  padding:clamp(14px,2vw,20px) clamp(16px,2.4vw,24px);
+  display:grid;
+  grid-template-columns:80px 1fr auto;
+  gap:clamp(12px,2vw,24px);
+  align-items:center;
+  transition:background .2s;
+}
+.stack-layer:hover{background:var(--surface-2)}
+.stack-num{
+  font-family:var(--font-mono);font-size:28px;font-weight:800;
+  color:var(--accent);line-height:1;
+  opacity:.7;
+}
+.stack-content h4{margin:0 0 4px;font-size:15px;font-weight:700}
+.stack-content p{margin:0;font-size:13px;color:var(--ink-dim);line-height:1.5}
+.stack-tags{
+  display:flex;flex-wrap:wrap;gap:6px;
+  font-size:11px;font-family:var(--font-mono);
+}
+.stack-tags span{
+  padding:3px 8px;border-radius:var(--radius);
+  background:var(--surface-3);color:var(--ink-dim);
+  white-space:nowrap;
+}
+.stack-gov{
+  background:var(--surface-2);
+  padding:16px 20px;
+  border-top:1px solid var(--rule);
+  font-size:13px;color:var(--ink-dim);
+}
+.stack-gov strong{color:var(--accent);font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-right:8px}
+
+@media(max-width:720px){
+  .stack-layer{grid-template-columns:1fr;gap:6px}
+  .stack-num{font-size:20px}
+  .stack-tags{margin-top:6px}
+}
+
+/* ============ Comparison: three routes ============ */
+.routes{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:1px;background:var(--rule);
+  border:1px solid var(--rule);border-radius:var(--radius-lg);
+  overflow:hidden;margin:24px 0;
+}
+.route{background:var(--surface);padding:clamp(18px,2.2vw,24px)}
+.route-title{
+  font-size:13px;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;margin-bottom:12px;
+  padding-bottom:10px;border-bottom:1px solid var(--rule);
+}
+.route.crypto .route-title{color:var(--accent)}
+.route.card .route-title{color:var(--accent-warm)}
+.route.hybrid .route-title{color:var(--accent-2)}
+.route p{font-size:13px;color:var(--ink-dim);line-height:1.55;margin-bottom:8px}
+.route ul{list-style:none;font-size:13px;color:var(--ink-dim)}
+.route ul li{padding:4px 0;padding-left:16px;position:relative}
+.route ul li::before{content:"→";position:absolute;left:0;color:var(--ink-mute);font-family:var(--font-mono)}
+
+/* ============ Sources ============ */
+.source-block{
+  background:var(--surface);
+  border:1px solid var(--rule);
+  border-radius:var(--radius);
+  padding:16px 20px;
+  margin:18px 0;
+  font-size:12px;color:var(--ink-mute);line-height:1.7;
+}
+.source-block strong{color:var(--ink-dim);font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:6px}
+.source-block a{color:var(--accent-2)}
+
+/* ============ Footer ============ */
+footer{
+  max-width:var(--content-w);margin:0 auto;
+  padding:clamp(32px,4vw,48px) var(--gutter);
+  font-size:12px;color:var(--ink-mute);
+  border-top:1px solid var(--rule);
+}
+footer p{margin-bottom:8px}
+footer a{color:var(--accent-2)}
+
+/* ============ Responsive ============ */
+@media(max-width:640px){
+  .protocol-head{flex-direction:column;align-items:flex-start}
+  .toc-title{display:none}
+}
+
+/* ============ Print ============ */
+@media print{
+  :root{--canvas:#fff;--ink:#111;--ink-dim:#333;--ink-mute:#555;--rule:#ddd;--surface:#fafafa;--surface-2:#f5f5f5;--surface-3:#eee;--accent:#006650;--accent-2:#0040a0}
+  body{background:#fff;color:#111}
+  .toc{display:none}
+  .masthead{background:#fff;border-bottom:2px solid #111}
+  .masthead::after{display:none}
+  section{break-inside:avoid;page-break-inside:avoid}
+  a{color:#0040a0}
+  .callout,.project,.protocol-card{border-color:#ccc}
+  .stack-layer{border:1px solid #ddd}
+}
+@media(prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important}
+}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <span class="kicker">Deep Research · 2026 Q2-Q3</span>
+    <h1>AI Agent <span class="grad">支付</span>全景</h1>
+    <p class="lede">从 x402 到 Mastercard AP4M，从 Base L2 到卡网络——一份关于机器原生货币、身份标准与七层支付栈的深度调研。基础设施量变已到位，等的是 Agent 能力质变的拐点。</p>
+    <div class="meta-row">
+      <span>调研时间 <strong>2026-10</strong></span>
+      <span>核心协议 <strong>6</strong></span>
+      <span>基础设施项目 <strong>4</strong></span>
+      <span>算力代币化 <strong>4</strong></span>
+    </div>
+  </div>
+</header>
+
+<nav class="toc" aria-label="目录">
+  <div class="toc-inner">
+    <span class="toc-title">目录</span>
+    <a href="#finding">核心发现</a>
+    <a href="#protocols">协议</a>
+    <a href="#infra">基础设施</a>
+    <a href="#compute">算力代币化</a>
+    <a href="#wallets">钱包与身份</a>
+    <a href="#data">关键数据</a>
+    <a href="#stack">七层栈</a>
+    <a href="#verdict">终局判断</a>
+  </div>
+</nav>
+
+<main>
+
+<!-- ===================== 核心发现 ===================== -->
+<section id="finding">
+  <div class="section-head">
+    <span class="section-num">00</span>
+    <h2>核心发现</h2>
+    <p class="section-sub">三个数量级的落差：基础设施量变已到位，叙事强劲，真实交易量仍处于早期。</p>
+  </div>
+
+  <div class="stats-strip">
+    <div class="stat">
+      <div class="stat-label">x402 累计交易量</div>
+      <div class="stat-value info">$135.7M</div>
+      <div class="stat-delta">1.783 亿笔 · Base 67% · USDC 99.6%</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">真实 Agent 支付（TRM 过滤后）</div>
+      <div class="stat-value warn">$5K-$11K / 月</div>
+      <div class="stat-delta">与 $70 亿估值存在三个数量级落差</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">稳定币总市值</div>
+      <div class="stat-value accent">$3000 亿+</div>
+      <div class="stat-delta">USDT $1895 亿 · USDC $773 亿</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">DePIN 算力网络年收入</div>
+      <div class="stat-value warm">$1.8-2.2 亿</div>
+      <div class="stat-delta">vs 总市值 $100 亿 · 估值倍数高</div>
+    </div>
+  </div>
+
+  <div class="callout" style="margin-top:28px">
+    <span class="callout-label">一句话结论</span>
+    <p>AI Agent 支付的"水电煤"已铺设到位，协议标准和巨头背书构成强劲叙事，但当前真实交易量（月均 $5K-$11K）与 $70 亿+生态估值之间存在三个数量级的落差。未来 12-24 个月的关键变量是：<strong>AI Agent 何时从"工具辅助"进化为"自主经济主体"</strong>——这取决于 Agent 能力的质变而非支付基础设施的量变。</p>
+  </div>
+
+  <div class="callout info" style="margin-top:16px">
+    <span class="callout-label">贝莱德背书</span>
+    <p>2026 年 9 月贝莱德发布《<a href="https://www.fifthera.com/newsletter/blackrock-embraces-our-investment-thesis-thank-you" target="_blank" rel="noopener noreferrer">The Machine-Native Economy</a>》，核心论点：AI = 机器原生智能，数字资产 = 机器原生货币，区块链 = 连接两者的可编程基础设施。预测 2030 年推理将超训练，占全球数据中心电力需求 43%。</p>
+  </div>
+</section>
+
+<!-- ===================== 协议 ===================== -->
+<section id="protocols">
+  <div class="section-head">
+    <span class="section-num">01</span>
+    <h2>核心协议与标准</h2>
+    <p class="section-sub">六条协议路线：加密原生（x402）、卡网络（Visa TAP / Mastercard AP4M）、混合（MPP）、授权（Google AP2）、身份（ERC-8004）、Agent 商务（ACP）。</p>
+  </div>
+
+  <div class="protocol-grid">
+
+    <!-- x402 -->
+    <article class="protocol-card">
+      <div class="protocol-head">
+        <div class="protocol-name">x402 · HTTP 402 Payment Required</div>
+        <span class="protocol-tag stablecoin">稳定币原生</span>
+      </div>
+      <p class="protocol-desc">由 Coinbase 孵化、2026 年 4 月移交 Linux 基金会。让 AI Agent 通过 HTTP 原生完成自主支付，无需注册账户或 API 密钥。服务器返回 402 状态码+价格信息，Agent 签名稳定币支付，同一 HTTP 往返内完成。</p>
+      <div class="protocol-meta">
+        <span><strong>治理</strong>Linux Foundation</span>
+        <span><strong>许可</strong>Apache-2.0</span>
+        <span><strong>合作方</strong>Cloudflare / Stripe / Visa / Google / AWS / Microsoft</span>
+      </div>
+      <div class="protocol-stats">
+        <div class="mini-stat"><div class="lbl">累计交易量</div><div class="val">$135.7M <small>调整前</small></div></div>
+        <div class="mini-stat"><div class="lbl">累计笔数</div><div class="val">1.783 亿</div></div>
+        <div class="mini-stat"><div class="lbl">结算货币</div><div class="val">USDC <small>99.6%</small></div></div>
+        <div class="mini-stat"><div class="lbl">结算时间</div><div class="val">&lt;1s <small>Base L2</small></div></div>
+        <div class="mini-stat"><div class="lbl">协议费</div><div class="val">0%</div></div>
+        <div class="mini-stat"><div class="lbl">主链</div><div class="val">Base <small>67%</small></div></div>
+      </div>
+      <div class="callout warn" style="margin:0">
+        <span class="callout-label">现实落差</span>
+        <p style="font-size:13px">日均真实交易量仅约 $2.8 万（CoinDesk 2026.3），相当部分为测试账户刷量。生态估值（$70 亿）与实际流水之间存在巨大落差。</p>
+      </div>
+      <p class="protocol-source">来源：<a href="https://x402.org/wp-content/uploads/sites/10/2026/06/x402-whitepaper.pdf" target="_blank" rel="noopener noreferrer">x402 白皮书</a> · <a href="https://www.visa.com/vcom-assets/content/dam/visa/reimagine-visa/thought-leadership/documents/agentic-payments-report.pdf" target="_blank" rel="noopener noreferrer">Visa/Artemis 报告</a> · <a href="https://www.chainalysis.com/blog/x402-agentic-payments-adoption/" target="_blank" rel="noopener noreferrer">Chainalysis</a></p>
+    </article>
+
+    <!-- ERC-8004 -->
+    <article class="protocol-card">
+      <div class="protocol-head">
+        <div class="protocol-name">ERC-8004 · 链上 Agent 身份与信誉</div>
+        <span class="protocol-tag id">身份标准</span>
+      </div>
+      <p class="protocol-desc">为 AI Agent 提供链上身份 NFT + 可验证信誉 + 加密验证三大基础设施。三个链上单例注册表：Identity / Reputation / Validation。起草人来自 MetaMask、以太坊基金会、Google、Coinbase。</p>
+      <div class="protocol-meta">
+        <span><strong>主网上线</strong>2026.1.29（以太坊）</span>
+        <span><strong>支持链</strong>21 条</span>
+        <span><strong>审计</strong>Cyfrin / Nethermind / EF Security</span>
+      </div>
+      <div class="protocol-stats">
+        <div class="mini-stat"><div class="lbl">注册 Agent</div><div class="val">14,000+</div></div>
+        <div class="mini-stat"><div class="lbl">链上反馈</div><div class="val">4,700+</div></div>
+        <div class="mini-stat"><div class="lbl">有效活跃</div><div class="val">3-15% <small>学术发现</small></div></div>
+        <div class="mini-stat"><div class="lbl">Gini 系数</div><div class="val">0.70-0.73</div></div>
+      </div>
+      <div class="callout warn" style="margin:0">
+        <span class="callout-label">学术实证</span>
+        <p style="font-size:13px">arxiv 论文显示，仅 3%-15% 的注册暴露有效服务端口，53% 以太坊注册缺 URI，所有权高度集中。信誉可被低成本操纵。</p>
+      </div>
+      <p class="protocol-source">来源：<a href="https://www.8004.org/blog/welcome-to-8004" target="_blank" rel="noopener noreferrer">8004.org 官方</a> · <a href="https://arxiv.org/pdf/2606.26028v2" target="_blank" rel="noopener noreferrer">arxiv 2606.26028</a></p>
+    </article>
+
+    <!-- MPP -->
+    <article class="protocol-card">
+      <div class="protocol-head">
+        <div class="protocol-name">MPP · Machine Payments Protocol</div>
+        <span class="protocol-tag hybrid">稳定币+法币</span>
+      </div>
+      <p class="protocol-desc">Stripe + Tempo 联合开发，Visa 参与贡献，2026 年 3 月上线。唯一同时支持稳定币和法币结算的 Agent 支付协议，含流式支付模型和 Visa Card Specification SDK 扩展。</p>
+      <div class="protocol-stats">
+        <div class="mini-stat"><div class="lbl">调整后交易量</div><div class="val">~$25K</div></div>
+        <div class="mini-stat"><div class="lbl">调整后笔数</div><div class="val">~115K</div></div>
+        <div class="mini-stat"><div class="lbl">日均</div><div class="val">~4K 笔</div></div>
+        <div class="mini-stat"><div class="lbl">买卖比</div><div class="val">32:1</div></div>
+      </div>
+      <p class="protocol-source">来源：<a href="https://www.visa.com/vcom-assets/content/dam/visa/reimagine-visa/thought-leadership/documents/agentic-payments-report.pdf" target="_blank" rel="noopener noreferrer">Visa/Artemis 报告</a></p>
+    </article>
+
+    <!-- Google AP2 -->
+    <article class="protocol-card">
+      <div class="protocol-head">
+        <div class="protocol-name">AP2 · Agent Payments Protocol</div>
+        <span class="protocol-tag auth">授权层</span>
+      </div>
+      <p class="protocol-desc">Google 2026.4 捐赠 FIDO Alliance 的加密签名授权框架。三层授权模型：Intent → Cart → Payment Mandate。设计为 A2A / MCP 扩展，支付轨道无关。60+ 组织参与。</p>
+      <div class="protocol-meta">
+        <span><strong>版本</strong>v0.2（引入 Human Not Present）</span>
+        <span><strong>合作方</strong>Mastercard / PayPal / Coinbase / Adyen / Revolut / UnionPay International</span>
+      </div>
+      <p class="protocol-source">来源：<a href="https://cloud.google.com/blog/ko/products/ai-machine-learning/announcing-agents-to-payments-ap2-protocol" target="_blank" rel="noopener noreferrer">Google Cloud Blog</a> · <a href="https://blog.google/products-and-platforms/platforms/google-pay/agent-payments-protocol-fido-alliance/" target="_blank" rel="noopener noreferrer">Google Blog</a></p>
+    </article>
+
+    <!-- Mastercard AP4M -->
+    <article class="protocol-card">
+      <div class="protocol-head">
+        <div class="protocol-name">AP4M · Agent Pay for Machines</div>
+        <span class="protocol-tag card">卡网络</span>
+      </div>
+      <p class="protocol-desc">Mastercard 2026.6.10 正式推出。将全球卡网络的信任治理能力带入机器驱动商业。支持微支付到 1 美分以下，7×24 程序化运行，从银行卡到稳定币多支付类型。</p>
+      <div class="protocol-meta">
+        <span><strong>三步模型</strong>凭证化 → 交易 → 结算</span>
+        <span><strong>合作方 30+</strong>Adyen / Coinbase / Stripe / Cloudflare / Solana Foundation / OKX</span>
+      </div>
+      <p class="protocol-source">来源：<a href="https://www.mastercard.com/news/press/2025/april/mastercard-unveils-agent-pay-pioneering-agentic-payments-technology-to-power-commerce-in-the-age-of-ai" target="_blank" rel="noopener noreferrer">Mastercard Newsroom</a></p>
+    </article>
+
+    <!-- Visa TAP -->
+    <article class="protocol-card">
+      <div class="protocol-head">
+        <div class="protocol-name">Visa Intelligent Commerce + TAP</div>
+        <span class="protocol-tag card">卡网络</span>
+      </div>
+      <p class="protocol-desc">Agent 专用支付令牌 + Passkey 认证 + 支付指令控制 + 商务信号 + MCP Server。TAP 与 Cloudflare 联合创建，2025.10 上线，通过加密签名 HTTP 消息验证 Agent 合法性。</p>
+      <div class="protocol-meta">
+        <span><strong>合作方</strong>Shopify / Microsoft / Stripe / Nuvei / Adyen</span>
+      </div>
+      <p class="protocol-source">来源：<a href="https://developer.visa.com/capabilities/visa-intelligent-commerce" target="_blank" rel="noopener noreferrer">Visa Developer Portal</a></p>
+    </article>
+
+  </div>
+
+  <h3>三条路线并行竞争</h3>
+  <div class="routes">
+    <div class="route crypto">
+      <div class="route-title">加密原生 · x402</div>
+      <p>纯稳定币结算、HTTP 402 往返、亚美分级 gas、7×24 无银行时间窗口。</p>
+      <ul>
+        <li>Base / Solana / Polygon 多链</li>
+        <li>无需账户注册</li>
+        <li>Cloudflare 每天 10 亿+ 402 响应</li>
+      </ul>
+    </div>
+    <div class="route card">
+      <div class="route-title">卡网络 · Visa / Mastercard</div>
+      <p>利用现有全球接受网络和信任基础设施，Agent 凭证化+Passkey 授权。</p>
+      <ul>
+        <li>商户端无需改造</li>
+        <li>7×24 程序化运行</li>
+        <li>合规基础设施成熟</li>
+      </ul>
+    </div>
+    <div class="route hybrid">
+      <div class="route-title">混合 · MPP</div>
+      <p>Stripe + Tempo，稳定币+法币双轨结算，流式支付模型。</p>
+      <ul>
+        <li>Visa Card Spec SDK 扩展</li>
+        <li>买卖比 32:1 需求旺盛</li>
+        <li>传统+加密桥接</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 基础设施 ===================== -->
+<section id="infra">
+  <div class="section-head">
+    <span class="section-num">02</span>
+    <h2>基础设施层项目</h2>
+    <p class="section-sub">四个核心基础设施项目，横跨 Agent 接入、身份支付、虚拟卡、智能钱包。</p>
+  </div>
+
+  <div class="project-list">
+
+    <article class="project">
+      <div class="project-head">
+        <h3>B.AI · 波场 TRON 的 Agent 基建</h3>
+        <span class="project-tag">Web2+Web3 双轨</span>
+      </div>
+      <p>战略顾问孙宇晨。统一 API 调用 ChatGPT / Claude / Gemini / Grok 等模型，集成 x402 支付和 ERC-8004 身份。底层 BTTInferGrid 基于 BitTorrent 全球节点的去中心化 GPU 算力网络。</p>
+      <div class="project-stats">
+        <div><div class="lbl">累计注册用户</div><div class="val">220 万</div></div>
+        <div><div class="lbl">单日 Token 吞吐</div><div class="val">1.11 万亿<small>2026.8.31</small></div></div>
+        <div><div class="lbl">14 天新增 API 用户</div><div class="val">19.6 万</div></div>
+        <div><div class="lbl">适配公链</div><div class="val">4 条<small>TRON / ETH / BNB / SOL</small></div></div>
+      </div>
+      <p class="source-block"><strong>来源</strong><a href="https://finance.sina.com.cn/wm/2026-09-02/doc-iniqmshw7672051.shtml.md" target="_blank" rel="noopener noreferrer">新浪财经</a> · <a href="https://edifyingcrypto.com/b-ai-explained-how-justin-suns-blockchain-powered-ai-relay-station-is-reshaping-access-to-anthropic-claude-gpt-and-gemini-ai-agents/" target="_blank" rel="noopener noreferrer">EdifyingCrypto</a></p>
+    </article>
+
+    <article class="project">
+      <div class="project-head">
+        <h3>KITE AI · Agent 护照</h3>
+        <span class="project-tag">Avalanche L1 · PayPal/Samsung 投资</span>
+      </div>
+      <p>基于 Avalanche 子网的 EVM 兼容 L1。业界首创三层身份模型：用户身份（硬件飞地根信任）+ Agent 身份（BIP-32 派生）+ 会话身份（完美前向保密）。集成 x402 / A2A / MPP / MCP，对接 90+ 服务商。</p>
+      <div class="project-stats">
+        <div><div class="lbl">融资额</div><div class="val">$33-35M<small>PayPal / General Catalyst / Samsung</small></div></div>
+        <div><div class="lbl">主网上线</div><div class="val">2026.4.30</div></div>
+        <div><div class="lbl">身份层级</div><div class="val">3 层<small>Root / Delegated / Ephemeral</small></div></div>
+      </div>
+      <p class="source-block"><strong>来源</strong><a href="https://www.gokite.ai/kite-whitepaper" target="_blank" rel="noopener noreferrer">KITE 白皮书</a> · <a href="https://theagenttimes.com/v1/articles/kite-ai-ships-agent-passport-with-passkey-gated-spending-ses-837f39e1" target="_blank" rel="noopener noreferrer">The Agent Times</a></p>
+    </article>
+
+    <article class="project">
+      <div class="project-head">
+        <h3>Interlace · Agent Card + Scan to Pay</h3>
+        <span class="project-tag">稳定币基础设施</span>
+      </div>
+      <p>为每个 AI Agent 分配专属虚拟卡（Visa/Mastercard 网络），覆盖云服务/广告/API 调用等场景。基于 MCP 协议集成，Agent 通过 MCP 工具获取卡号/CVV。每卡生命周期消费限额 $20，支持 USDC/USDT 链上充值。</p>
+      <div class="project-stats">
+        <div><div class="lbl">2024 交易额</div><div class="val">$60 亿+</div></div>
+        <div><div class="lbl">服务企业</div><div class="val">7,500 家</div></div>
+        <div><div class="lbl">卡消费年增长</div><div class="val">80%</div></div>
+        <div><div class="lbl">全球覆盖</div><div class="val">180+ 国家<small>40+ 法币</small></div></div>
+      </div>
+      <p class="source-block"><strong>来源</strong><a href="https://developer.interlace.money/docs/overview-2" target="_blank" rel="noopener noreferrer">Interlace Dev Docs</a> · <a href="https://www.chaincatcher.com/en/article/2265950" target="_blank" rel="noopener noreferrer">ChainCatcher</a></p>
+    </article>
+
+    <article class="project">
+      <div class="project-head">
+        <h3>Airwallex Airi · 智能体商业钱包</h3>
+        <span class="project-tag">母公司估值 $110 亿</span>
+      </div>
+      <p>空中云汇推出的一键结账 + 面向智能体商业的钱包底层体系。未来升级为智能代理授权支付、消费管控、多币种余额管理。母公司年化营收 $13 亿，85+ 全球牌照。</p>
+      <div class="project-stats">
+        <div><div class="lbl">母公司 H 轮融资</div><div class="val">$3.2 亿<small>估值 $110 亿</small></div></div>
+        <div><div class="lbl">年化交易量</div><div class="val">$2,870 亿<small>+120% YoY</small></div></div>
+        <div><div class="lbl">服务企业</div><div class="val">67.6 万+</div></div>
+      </div>
+      <p class="source-block"><strong>来源</strong><a href="https://www.airwallex.com/cn/newsroom/airwallex-3-2-cny-h-110-cny" target="_blank" rel="noopener noreferrer">Airwallex Newsroom</a> · <a href="https://www.airwallex.com/cn/blog/what-is-airi-agentic-commerce" target="_blank" rel="noopener noreferrer">Airwallex Blog</a></p>
+    </article>
+
+  </div>
+</section>
+
+<!-- ===================== 算力代币化 ===================== -->
+<section id="compute">
+  <div class="section-head">
+    <span class="section-num">03</span>
+    <h2>算力代币化</h2>
+    <p class="section-sub">把"AI 推理能力"变成可交易、可质押的永续资产——最具想象力但距现实最远的资产类别。</p>
+  </div>
+
+  <div class="table-wrap">
+    <caption>四个核心算力代币化项目对比</caption>
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">项目</th>
+          <th scope="col">代币</th>
+          <th scope="col">市值</th>
+          <th scope="col">核心模式</th>
+          <th scope="col" class="num-col">关键数据</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Venice AI · DIEM</strong></td>
+          <td><span class="mono-val">VVV</span> <small>Base</small></td>
+          <td><span class="mono-val">—</span></td>
+          <td>1 DIEM = $1/天永久 API 额度；质押 VVV → sVVV → 指数铸造 DIEM</td>
+          <td class="num-col"><span class="mono-val">DIEM 37,600+</span><br><small>日聚合 $28.4K</small></td>
+        </tr>
+        <tr>
+          <td><strong>Render Network</strong></td>
+          <td><span class="mono-val">RENDER</span> <small>Solana</small></td>
+          <td><span class="mono-val">~$7.3 亿</span></td>
+          <td>Burn-and-Mint 均衡模型；GPU 渲染 + AI 推理网络</td>
+          <td class="num-col"><span class="mono-val">GPU 转负</span><br><small>AI 占比 35-40%</small></td>
+        </tr>
+        <tr>
+          <td><strong>Bittensor</strong></td>
+          <td><span class="mono-val">TAO</span></td>
+          <td><span class="mono-val">~$34 亿</span></td>
+          <td>128 专业化子网；Dynamic TAO 用 AMM 替代行政分配</td>
+          <td class="num-col"><span class="mono-val">Q1 $4,300 万</span><br><small>日产量 3,600 TAO</small></td>
+        </tr>
+        <tr>
+          <td><strong>Akash Network</strong></td>
+          <td><span class="mono-val">AKT</span> <small>Cosmos</small></td>
+          <td><span class="mono-val">~$1.37 亿</span></td>
+          <td>去中心化 AWS；相对 AWS 便宜 18-30×（Messari）</td>
+          <td class="num-col"><span class="mono-val">Q1 $253K</span><br><small>链上收入 vs 报告差 5×</small></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Venice DIEM 公平价值框架</h3>
+  <div class="table-wrap">
+    <caption>永续年金模型（1 DIEM = $365/年现金流）</caption>
+    <table>
+      <thead>
+        <tr><th scope="col">折现率</th><th scope="col">隐含价值</th><th scope="col">解读</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="num-col"><span class="mono-val">100%</span></td><td class="num-col"><span class="mono-val">$365</span></td><td>仅求 1 年回本（投机心态）</td></tr>
+        <tr><td class="num-col"><span class="mono-val">50%</span></td><td class="num-col"><span class="mono-val">$730</span></td><td>保守估计</td></tr>
+        <tr><td class="num-col"><span class="mono-val">25%</span></td><td class="num-col"><span class="mono-val">$1,460</span></td><td>乐观估计</td></tr>
+        <tr><td class="num-col"><span class="mono-val">10%</span></td><td class="num-col"><span class="mono-val">$3,650</span></td><td>极度看好</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="source-block" style="margin-top:18px"><strong>来源</strong><a href="https://www.venicestats.com/what-is-diem" target="_blank" rel="noopener noreferrer">VeniceStats</a> · <a href="https://renderfoundation.com/faq" target="_blank" rel="noopener noreferrer">Render Foundation FAQ</a> · <a href="https://arxiv.org/pdf/2603.29751v1" target="_blank" rel="noopener noreferrer">arxiv 2603.29751</a></p>
+</section>
+
+<!-- ===================== 钱包与身份 ===================== -->
+<section id="wallets">
+  <div class="section-head">
+    <span class="section-num">04</span>
+    <h2>智能钱包与 Agent 交易</h2>
+    <p class="section-sub">EIP-7702 会话级权限、AgentKit 全栈 SDK、Privy 嵌入式钱包 1.6 亿账户。</p>
+  </div>
+
+  <div class="project-list">
+
+    <article class="project">
+      <div class="project-head">
+        <h3>EIP-7702 · 会话级交易权限</h3>
+        <span class="project-tag">Pectra 升级</span>
+      </div>
+      <p>允许 EOA 在交易执行期间临时将自身设置为智能合约，交易完成后自动回退。设置基于时间的过期和单次使用限制，无需迁移资产到新的智能合约钱包。</p>
+      <div class="callout info" style="margin:8px 0 0">
+        <span class="callout-label">意义</span>
+        <p style="font-size:13px">账户抽象的关键拼图。为 Agent 提供"用完即弃"的会话级交易权限，平衡便利性与安全性。</p>
+      </div>
+    </article>
+
+    <article class="project">
+      <div class="project-head">
+        <h3>Coinbase AgentKit</h3>
+        <span class="project-tag">开源 SDK · Base TVL $42 亿</span>
+      </div>
+      <p>框架无关（兼容 LangChain / ElizaOS / Vercel AI SDK / Google ADK），钱包无关（支持 CDP / Privy / ZeroDev / Viem），多语言（TS + Python）。内置 50+ 链上操作。MCP Extension 让任何 MCP 客户端发现并调用 AgentKit。</p>
+      <div class="project-stats">
+        <div><div class="lbl">npm 周下载量</div><div class="val">~10K</div></div>
+        <div><div class="lbl">链上操作数</div><div class="val">50+</div></div>
+        <div><div class="lbl">Base L2 TVL</div><div class="val">$42 亿</div></div>
+      </div>
+      <p class="source-block"><strong>来源</strong><a href="https://www.coinbase.com/zh-tw/developer-platform/discover/launches/openai-agents-sdk" target="_blank" rel="noopener noreferrer">Coinbase CDP</a> · <a href="https://the-agent-report.com/2026/06/coinbase-mcp-agent-integration/" target="_blank" rel="noopener noreferrer">The Agent Report</a></p>
+    </article>
+
+    <article class="project">
+      <div class="project-head">
+        <h3>Privy 嵌入式钱包</h3>
+        <span class="project-tag">1.6 亿+ 账户</span>
+      </div>
+      <p>为 AI Agent 提供可编程嵌入式钱包基础设施。自主钱包 + 委托签名 + 策略引擎三层模型。私钥从不在 Agent 提示词中暴露，存储在硬件 TEE，密钥分片隔离。</p>
+      <div class="project-stats">
+        <div><div class="lbl">账户数</div><div class="val">1.6 亿+</div></div>
+        <div><div class="lbl">月交易量</div><div class="val">$150 亿+</div></div>
+        <div><div class="lbl">签名延迟</div><div class="val">&lt;20ms</div></div>
+        <div><div class="lbl">可用性</div><div class="val">99.99%</div></div>
+      </div>
+      <p class="source-block"><strong>来源</strong><a href="https://www.privy.io/agent-wallets" target="_blank" rel="noopener noreferrer">Privy Agent Wallets</a> · <a href="https://docs.privy.io/wallets/overview/solutions/agent-wallets" target="_blank" rel="noopener noreferrer">Privy Docs</a></p>
+    </article>
+
+  </div>
+</section>
+
+<!-- ===================== 数据 ===================== -->
+<section id="data">
+  <div class="section-head">
+    <span class="section-num">05</span>
+    <h2>关键数据汇总</h2>
+    <p class="section-sub">核心协议交易量对比 + 主要项目融资情况。</p>
+  </div>
+
+  <div class="table-wrap">
+    <caption>核心协议交易量对比</caption>
+    <table>
+      <thead>
+        <tr><th scope="col">协议</th><th scope="col" class="num-col">累计交易量</th><th scope="col" class="num-col">累计笔数</th><th scope="col">上线时间</th><th scope="col">结算方式</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>x402</strong></td>
+          <td class="num-col"><span class="mono-val">$135.7M</span> <small>/ $15M 调整后</small></td>
+          <td class="num-col"><span class="mono-val">1.783 亿</span></td>
+          <td>2025.5</td>
+          <td>稳定币（USDC 为主）</td>
+        </tr>
+        <tr>
+          <td><strong>MPP</strong></td>
+          <td class="num-col"><span class="mono-val">$25K</span> <small>调整后</small></td>
+          <td class="num-col"><span class="mono-val">~115K</span></td>
+          <td>2026.3</td>
+          <td>稳定币+法币</td>
+        </tr>
+        <tr>
+          <td><strong>真实 Agent 支付（TRM 过滤）</strong></td>
+          <td class="num-col"><span class="mono-val">$154K-$1.92M</span></td>
+          <td class="num-col">—</td>
+          <td>—</td>
+          <td>USDC</td>
+        </tr>
+        <tr>
+          <td><strong>月均真实商业支付</strong></td>
+          <td class="num-col"><span class="mono-val">$5K-$11K</span></td>
+          <td class="num-col">—</td>
+          <td>—</td>
+          <td>—</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="table-wrap">
+    <caption>主要项目融资与市值</caption>
+    <table>
+      <thead>
+        <tr><th scope="col">项目</th><th scope="col" class="num-col">融资额</th><th scope="col">投资方</th><th scope="col" class="num-col">估值 / 市值</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>KITE AI</strong></td><td class="num-col"><span class="mono-val">$33-35M</span></td><td>PayPal Ventures / General Catalyst / Samsung Next</td><td class="num-col">未披露</td></tr>
+        <tr><td><strong>Airwallex（母）</strong></td><td class="num-col"><span class="mono-val">$3.2 亿 H 轮</span></td><td>Addition / Baillie Gifford / Amex</td><td class="num-col"><span class="mono-val">$110 亿</span></td></tr>
+        <tr><td><strong>Stripe</strong></td><td class="num-col">—</td><td>—</td><td class="num-col"><span class="mono-val">$1,590 亿</span></td></tr>
+        <tr><td><strong>Virtuals Protocol</strong></td><td class="num-col">—</td><td>—</td><td class="num-col"><span class="mono-val">$4.4 亿</span></td></tr>
+        <tr><td><strong>Bittensor</strong></td><td class="num-col">—</td><td>—</td><td class="num-col"><span class="mono-val">$34 亿</span></td></tr>
+        <tr><td><strong>Render Network</strong></td><td class="num-col">—</td><td>—</td><td class="num-col"><span class="mono-val">$7.3 亿</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ===================== 七层栈 ===================== -->
+<section id="stack">
+  <div class="section-head">
+    <span class="section-num">06</span>
+    <h2>AI Agent 支付栈全景图</h2>
+    <p class="section-sub">从底层结算基础设施到顶层应用框架，七层架构定义 Agent 经济的完整技术栈。</p>
+  </div>
+
+  <div class="stack" role="img" aria-label="AI Agent 支付栈七层架构">
+    <div class="stack-layer">
+      <div class="stack-num">L7</div>
+      <div class="stack-content">
+        <h4>应用层</h4>
+        <p>AI Agent 框架与消费者入口。Claude / GPT / Gemini / OpenAI Agents SDK；Virtuals / B.AI / CrewAI / LangChain；Coinbase Advisor / Airwallex Airi / AgentCard。</p>
+      </div>
+      <div class="stack-tags">
+        <span>模型厂商</span><span>平台混战</span>
+      </div>
+    </div>
+    <div class="stack-layer">
+      <div class="stack-num">L6</div>
+      <div class="stack-content">
+        <h4>授权与编排层</h4>
+        <p>谁有权让 Agent 买什么。Google AP2（意图/购物车/支付）· Visa TAP（可信 Agent 协议）· Mastercard Agent Pay（凭证化+管控）· KITE Passport（Standing Intent）。</p>
+      </div>
+      <div class="stack-tags">
+        <span>Google</span><span>Visa</span><span>Mastercard</span><span>KITE</span>
+      </div>
+    </div>
+    <div class="stack-layer">
+      <div class="stack-num">L5</div>
+      <div class="stack-content">
+        <h4>商务协议层</h4>
+        <p>Agent 间如何发现/交易能力。Stripe+OpenAI ACP · Virtuals ACP · Google A2A · Anthropic MCP。</p>
+      </div>
+      <div class="stack-tags">
+        <span>标准化初期</span><span>互操作是关键</span>
+      </div>
+    </div>
+    <div class="stack-layer">
+      <div class="stack-num">L4</div>
+      <div class="stack-content">
+        <h4>支付协议层</h4>
+        <p>怎么付钱。x402（稳定币微支付 · HTTP 402）· MPP（Stripe+Tempo · 稳定币+法币）· Interlace Agent Card · YC AgentCard。</p>
+      </div>
+      <div class="stack-tags">
+        <span>加密原生</span><span>卡网络</span><span>混合</span>
+      </div>
+    </div>
+    <div class="stack-layer">
+      <div class="stack-num">L3</div>
+      <div class="stack-content">
+        <h4>钱包与密钥管理</h4>
+        <p>谁保管 Agent 的钱。Coinbase AgentKit（50+ 操作）· Privy Agent Wallets（1.6 亿账户）· CDP 飞地钱包 · Session Key / EIP-7702。</p>
+      </div>
+      <div class="stack-tags">
+        <span>Privy 规模领先</span><span>Coinbase 全栈</span>
+      </div>
+    </div>
+    <div class="stack-layer">
+      <div class="stack-num">L2</div>
+      <div class="stack-content">
+        <h4>身份与信任层</h4>
+        <p>如何验证 Agent 身份和信誉。ERC-8004（链上 NFT + 信誉 · 14K+ Agents）· KITE Passport（VC + DID）· Mastercard Verifiable Intent · Visa Agent Tokens。</p>
+      </div>
+      <div class="stack-tags">
+        <span>开放标准</span><span>商业方案</span>
+      </div>
+    </div>
+    <div class="stack-layer">
+      <div class="stack-num">L1</div>
+      <div class="stack-content">
+        <h4>结算与基础设施层</h4>
+        <p>钱从哪来到哪去。稳定币（USDC / USDT）· L2 结算（Base ~0.4s/$0.001 · Solana ~400ms）· 卡网络（Visa / Mastercard）· DePIN 算力（Render / Akash / Bittensor）· 算力代币化（DIEM / RENDER / AKT / TAO）。</p>
+      </div>
+      <div class="stack-tags">
+        <span>稳定币是最大赢家</span>
+      </div>
+    </div>
+    <div class="stack-gov">
+      <strong>治理与标准</strong>
+      Linux Foundation（x402）· FIDO Alliance（AP2）· Ethereum Foundation（ERC-8004）· 中国网信办（智能体意见）
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 终局判断 ===================== -->
+<section id="verdict">
+  <div class="section-head">
+    <span class="section-num">07</span>
+    <h2>终局判断</h2>
+    <p class="section-sub">乐观面 vs 现实面，以及未来 12-24 个月的关键变量。</p>
+  </div>
+
+  <div class="callout" style="margin-bottom:16px">
+    <span class="callout-label">乐观面</span>
+    <p>协议标准已建立（x402/MPP/AP2/TAP/ERC-8004），不是空中楼阁。传统巨头全面入场（Visa / Mastercard / Google / Stripe / AWS / Cloudflare）。基础设施可用（Base 结算 &lt;1s/$0.001，Privy 1.6 亿账户）。贝莱德等顶级机构背书，叙事从"加密圈自嗨"进入主流投资视野。</p>
+  </div>
+
+  <div class="callout warn" style="margin-bottom:16px">
+    <span class="callout-label">现实面</span>
+    <p>真实 Agent 支付月均仅 $5K-$11K（TRM Labs 过滤后）。ERC-8004 仅 3-15% 注册有效活跃，信誉系统可低成本操纵。DePIN 年收入 $1.8-2.2 亿 vs 总市值 $100 亿，估值泡沫明显。Agent 自主采购算力并结算的场景尚未在任何平台规模化发生。协议间互操作性仍处早期。</p>
+  </div>
+
+  <div class="callout info">
+    <span class="callout-label">关键变量</span>
+    <p>AI Agent 何时从"工具辅助"进化为"自主经济主体"——这取决于 <strong>Agent 能力的质变</strong>，而非支付基础设施的量变。</p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <p>调研完成于 2026 年 10 月 · 数据来源于协议白皮书、官方文档、学术论文、财报电话会记录和第三方分析</p>
+  <p>托管于 GitHub Pages · <a href="https://maomao8412.github.io/bridge-health-proposal/" target="_blank" rel="noopener noreferrer">maomao8412.github.io/bridge-health-proposal</a></p>
+</footer>
+
+<script>
+(function(){
+  try{
+    // Smooth scroll + active TOC highlight
+    var tocLinks=document.querySelectorAll('.toc a');
+    var sections=[];
+    tocLinks.forEach(function(a){
+      var id=a.getAttribute('href').slice(1);
+      var el=document.getElementById(id);
+      if(el) sections.push({el:el,link:a});
+    });
+    function onScroll(){
+      var y=window.scrollY+120;
+      var current=null;
+      sections.forEach(function(s){
+        if(s.el.offsetTop<=y) current=s;
+      });
+      tocLinks.forEach(function(a){a.classList.remove('active')});
+      if(current) current.link.classList.add('active');
+    }
+    window.addEventListener('scroll',onScroll,{passive:true});
+    onScroll();
+  }catch(e){/* silent */}
+})();
+</script>
+</body>
+</html>
